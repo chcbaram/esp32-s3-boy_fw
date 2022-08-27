@@ -8,7 +8,9 @@
 
 #include "uart.h"
 #include "qbuffer.h"
+#include "cdc.h"
 #include "driver/uart.h"
+
 
 
 #ifdef _USE_HW_UART
@@ -83,6 +85,9 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       break;
 
     case _DEF_UART2:
+      uart_tbl[ch].is_open = true;
+      uart_tbl[ch].baud = baud;
+      ret = true;
       break;
   }
 
@@ -125,6 +130,7 @@ uint32_t uartAvailable(uint8_t ch)
       break;
 
     case _DEF_UART2:
+      ret = cdcAvailable();
       break;
   }
 
@@ -159,6 +165,7 @@ uint8_t uartRead(uint8_t ch)
       break;
 
     case _DEF_UART2:
+      ret = cdcRead();
       break;
   }
 
@@ -179,6 +186,7 @@ uint32_t uartWrite(uint8_t ch, uint8_t *p_data, uint32_t length)
       break;
 
     case _DEF_UART2:
+      ret = cdcWrite(p_data, length);
       break;
   }
 

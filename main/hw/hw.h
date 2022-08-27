@@ -19,6 +19,8 @@ extern "C" {
 #include "uart.h"
 #include "cli.h"
 #include "log.h"
+#include "cdc.h"
+
 
 
 bool hwInit(void);

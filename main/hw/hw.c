@@ -23,6 +23,7 @@ bool hwInit(void)
 
   cliInit();
   logInit();
+  cdcInit();
   uartInit();
   uartOpen(_DEF_UART1, 115200);
   logOpen(_DEF_UART1, 115200);
@@ -60,6 +61,6 @@ void bootMsg(void)
 
   logPrintf("SPI PSRAM : %dMB\n", esp_psram_get_size()/1024/1024);
 
-  logPrintf("Free heap : %ldd KB\n", esp_get_free_heap_size()/1024);
+  logPrintf("Free heap : %ld KB\n", esp_get_free_heap_size()/1024);
   logPrintf("CPU Freq  : %lu Mhz\n", bspGetCpuFreqMhz());
 }

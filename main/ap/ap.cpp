@@ -14,17 +14,17 @@
 
 
 
+
 void apInit(void)
 {
-  cliOpen(_DEF_UART1, 115200);
+  cliOpen(_DEF_UART2, 115200);
 }
 
 void apMain(void)
 {
-
   while(1)
   {
     cliMain();
-    delay(1);
+    delay(1); 
   }
 }

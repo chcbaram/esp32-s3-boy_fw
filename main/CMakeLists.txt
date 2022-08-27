@@ -8,12 +8,13 @@ file(GLOB SRC_FILES
 
 file(GLOB_RECURSE SRC_FILES_RECURSE
   ap/*.c
+  ap/*.cpp
   common/*.c 
 )
 
 
 idf_component_register(
-    SRCS "main.c"
+    SRCS "main.cpp"
     
     SRCS ${SRC_FILES}
     SRCS ${SRC_FILES_RECURSE}
