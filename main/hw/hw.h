@@ -17,6 +17,7 @@ extern "C" {
 
 #include "led.h"
 #include "uart.h"
+#include "gpio.h"
 #include "cli.h"
 #include "log.h"
 #include "cdc.h"
