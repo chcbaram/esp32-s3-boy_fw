@@ -23,6 +23,7 @@ bool hwInit(void)
 
   cliInit();
   logInit();
+  ledInit();
   cdcInit();
   uartInit();
   uartOpen(_DEF_UART1, 115200);
