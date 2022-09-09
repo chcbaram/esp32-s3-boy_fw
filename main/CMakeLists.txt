@@ -4,6 +4,7 @@ file(GLOB SRC_FILES
   bsp/*.c
   hw/*.c
   hw/driver/*.c
+  hw/driver/lcd/*.c
 )
 
 file(GLOB_RECURSE SRC_FILES_RECURSE

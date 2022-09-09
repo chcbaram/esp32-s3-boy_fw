@@ -41,7 +41,20 @@
 #define      HW_LOG_LIST_BUF_MAX    1024
 
 #define _USE_HW_GPIO
-#define      HW_GPIO_MAX_CH         5
+#define      HW_GPIO_MAX_CH         6
 
+#define _USE_HW_LCD
+#define      HW_LCD_LVGL            1
+#define      HW_LCD_LOGO            1
+#define _USE_HW_ST7789
+#define      HW_LCD_WIDTH           240
+#define      HW_LCD_HEIGHT          240
+
+
+
+#define _PIN_GPIO_LCD_BLK           2
+#define _PIN_GPIO_LCD_DC            1
+#define _PIN_GPIO_LCD_CS           -1
+#define _PIN_GPIO_LCD_RST           3
 
 #endif /* MAIN_HW_HW_DEF_H_ */
