@@ -150,7 +150,7 @@ bool st7789SpiInit(void)
   };
   spi_device_interface_config_t devcfg = 
   {
-    .clock_speed_hz = 40*1000*1000,          // Clock out at 10 MHz
+    .clock_speed_hz = 40*1000*1000,          // Clock out at 40 MHz
     .mode = 0,                               // SPI mode 0
     .spics_io_num = GPIO_NUM_15,             // CS pin
     .queue_size = 16,                        // We want to be able to queue 8 transactions at a time
