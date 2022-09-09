@@ -21,7 +21,9 @@ extern "C" {
 #include "cli.h"
 #include "log.h"
 #include "cdc.h"
+#include "lcd.h"
 
+#include "lcd/st7789.h"
 
 
 bool hwInit(void);
