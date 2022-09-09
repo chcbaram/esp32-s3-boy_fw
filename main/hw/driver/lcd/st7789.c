@@ -181,7 +181,9 @@ bool st7789Reset(void)
   if (_PIN_DEF_BLK >= 0) gpioPinWrite(_PIN_DEF_BLK, _DEF_LOW);
   if (_PIN_DEF_DC >= 0)  gpioPinWrite(_PIN_DEF_DC,  _DEF_HIGH);
   if (_PIN_DEF_CS >= 0)  gpioPinWrite(_PIN_DEF_CS,  _DEF_HIGH);
+  if (_PIN_DEF_RST >= 0) gpioPinWrite(_PIN_DEF_RST, _DEF_LOW);
   delay(10);
+  if (_PIN_DEF_RST >= 0) gpioPinWrite(_PIN_DEF_RST, _DEF_HIGH);
 
   st7789InitRegs();
 
