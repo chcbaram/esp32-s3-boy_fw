@@ -238,7 +238,7 @@ void writedata(uint8_t d)
   ret = spi_device_polling_transmit(spi_ch, &t);  //Transmit!  
   if (ret != ESP_OK)
   {
-    logPrintf("writecommand fail\n");
+    logPrintf("writedata fail\n");
   }
 }
 
