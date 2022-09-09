@@ -347,7 +347,7 @@ void st7789FillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color)
 
   is_write_frame = true;
   cb_data.q_req = true;
-  cb_data.q_max = h/8;
+  cb_data.q_max = h;
   cb_data.q_index = 0;
   cb_data.dc = 1;
  
@@ -431,6 +431,7 @@ void cliCmd(cli_args_t *args)
     }
 
     st7789SetCallBack(cb_func_pre);
+    ret = true;
   }
 
   if (ret == false)
