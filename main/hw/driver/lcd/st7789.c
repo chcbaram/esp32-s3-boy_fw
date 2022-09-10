@@ -84,7 +84,6 @@ static void transferDoneISR(void)
 
 
 
-
 bool st7789Init(void)
 {
   bool ret = true;
@@ -113,21 +112,21 @@ bool st7789InitDriver(lcd_driver_t *p_driver)
   return true;
 }
 
-void st7789PreCallback(spi_transaction_t *t)
+void IRAM_ATTR st7789PreCallback(spi_transaction_t *t)
 {
   cb_data_t *p_data = (cb_data_t *)t->user;
 
   gpioPinWrite(_PIN_DEF_DC, p_data->dc);
 }
 
-void st7789PostCallback(spi_transaction_t *t)
+void IRAM_ATTR st7789PostCallback(spi_transaction_t *t)
 {
   cb_data_t *p_data = (cb_data_t *)t->user;
 
   if (p_data->q_req == true)
   {
     p_data->q_index++;
-    if (p_data->q_max >= p_data->q_index)
+    if (p_data->q_index >= p_data->q_max)
     {
       transferDoneISR();
       p_data->q_req = false;
@@ -146,7 +145,7 @@ bool st7789SpiInit(void)
     .sclk_io_num = GPIO_NUM_7,
     .quadwp_io_num = -1,
     .quadhd_io_num = -1,
-    .max_transfer_sz = 0
+    .max_transfer_sz = 64*1024
   };
   spi_device_interface_config_t devcfg = 
   {
@@ -154,7 +153,7 @@ bool st7789SpiInit(void)
     .mode = 0,                               // SPI mode 0
     .spics_io_num = GPIO_NUM_15,             // CS pin
     .queue_size = 16,                        // We want to be able to queue 8 transactions at a time
-    .flags = SPI_DEVICE_HALFDUPLEX, 
+    .flags = SPI_DEVICE_HALFDUPLEX | SPI_DEVICE_NO_RETURN_RESULT, 
     .pre_cb = st7789PreCallback,             // Specify pre-transfer callback to handle D/C line
     .post_cb = st7789PostCallback
   };
@@ -363,8 +362,40 @@ void st7789FillRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color)
 
 bool st7789SendBuffer(uint8_t *p_data, uint32_t length, uint32_t timeout_ms)
 {
-  is_write_frame = true;
+  const uint32_t block_cnt = 4;
+  static spi_transaction_t trans[4];
+  uint32_t block_len_bytes;
+  esp_err_t ret;
 
+
+  // LCD 프레임 버퍼를 block_cnt 갯수만큼 나눠서 SPI DMA로 전송한다. 
+  // 따라서 트랜젝션 데이터도 block_cnt 갯수만큼 필요하다.
+  // 1픽셀은 2바이트이기 때문에 2를 곱해야 한다. 
+  //
+  block_len_bytes = (length/block_cnt) * 2; // bytes
+
+  for (int i=0; i<block_cnt; i++)
+  {
+    memset(&trans[i], 0, sizeof(spi_transaction_t));
+    trans[i].length = block_len_bytes * 8; // bits               
+    trans[i].tx_buffer = &p_data[block_len_bytes * i];        
+    trans[i].user = (void*)&cb_data;     
+  }
+
+  is_write_frame = true;
+  cb_data.q_req = true;
+  cb_data.q_max = block_cnt;
+  cb_data.q_index = 0;
+  cb_data.dc = 1;
+
+  for (int i=0; i<block_cnt; i++) 
+  {
+    ret = spi_device_queue_trans(spi_ch, &trans[i], 10);
+    if (ret != ESP_OK)
+    {
+      // ToDo
+    }
+  }
 
   return true;
 }

@@ -45,7 +45,7 @@
 
 #define _USE_HW_LCD
 #define      HW_LCD_LVGL            1
-#define      HW_LCD_LOGO            1
+#define      HW_LCD_LOGO            0
 #define _USE_HW_ST7789
 #define      HW_LCD_WIDTH           240
 #define      HW_LCD_HEIGHT          240

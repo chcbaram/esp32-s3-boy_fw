@@ -23,7 +23,6 @@ extern "C" {
 #include "cdc.h"
 #include "lcd.h"
 
-#include "lcd/st7789.h"
 
 
 bool hwInit(void);

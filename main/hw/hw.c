@@ -35,9 +35,8 @@ bool hwInit(void)
   logPrintf("Booting..Name \t\t: %s\r\n", _DEF_BOARD_NAME);
   logPrintf("Booting..Ver  \t\t: %s\r\n", _DEF_FIRMWATRE_VERSION);  
 
-  st7789Init();
+  lcdInit();
 
-  gpioPinWrite(_PIN_GPIO_LCD_BLK, _DEF_HIGH);
 
   return true;
 }
