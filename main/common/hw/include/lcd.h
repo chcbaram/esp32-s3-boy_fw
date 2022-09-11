@@ -30,7 +30,6 @@ extern "C" {
 #define RGB2COLOR(r, g, b) ((((r>>3)<<11) | ((g>>2)<<5) | (b>>3)))
 
 
-
 #if 1
 enum class_color {
  white     = 0xFFFF,

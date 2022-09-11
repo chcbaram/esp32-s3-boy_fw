@@ -194,12 +194,17 @@ LCD_OPT_DEF uint32_t lcdReadPixel(uint16_t x_pos, uint16_t y_pos)
   return p_draw_frame_buf[y_pos * LCD_WIDTH + x_pos];
 }
 
-LCD_OPT_DEF void lcdDrawPixel(int16_t x_pos, int16_t y_pos, uint32_t rgb_code)
+LCD_OPT_DEF inline void lcdDrawPixel(int16_t x_pos, int16_t y_pos, uint32_t rgb_code)
 {
+  uint16_t rgb_out;
+
   if (x_pos < 0 || x_pos >= LCD_WIDTH) return;
   if (y_pos < 0 || y_pos >= LCD_HEIGHT) return;
 
-  p_draw_frame_buf[y_pos * LCD_WIDTH + x_pos] = rgb_code;
+  rgb_out  = (rgb_code>>8) & 0x00FF;
+  rgb_out |= (rgb_code<<8) & 0xFF00;
+
+  p_draw_frame_buf[y_pos * LCD_WIDTH + x_pos] = rgb_out;
 }
 
 LCD_OPT_DEF void lcdClear(uint32_t rgb_code)
@@ -232,7 +237,8 @@ LCD_OPT_DEF void lcdDrawFillCircle(int32_t x0, int32_t y0, int32_t r, uint16_t c
   while(x<r)
   {
 
-    if(p>=0) {
+    if(p>=0) 
+    {
       dy-=2;
       p-=dy;
       r--;
@@ -896,14 +902,26 @@ LCD_OPT_DEF uint16_t lcdGetColorMix(uint16_t c1_, uint16_t c2_, uint8_t mix)
 LCD_OPT_DEF void lcdDrawPixelMix(int16_t x_pos, int16_t y_pos, uint32_t rgb_code, uint8_t mix)
 {
   uint16_t color1, color2;
+  uint16_t buf_data;
+  uint16_t rgb_out;
 
   if (x_pos < 0 || x_pos >= LCD_WIDTH) return;
   if (y_pos < 0 || y_pos >= LCD_HEIGHT) return;
 
-  color1 = p_draw_frame_buf[y_pos * LCD_WIDTH + x_pos];
+  
+  buf_data = p_draw_frame_buf[y_pos * LCD_WIDTH + x_pos];
+
+  rgb_out  = (buf_data>>8) & 0x00FF;
+  rgb_out |= (buf_data<<8) & 0xFF00;
+
+  color1 = rgb_out;
   color2 = rgb_code;
 
-  p_draw_frame_buf[y_pos * LCD_WIDTH + x_pos] = lcdGetColorMix(color1, color2, 255-mix);
+  buf_data = lcdGetColorMix(color1, color2, 255-mix);
+  rgb_out  = (buf_data>>8) & 0x00FF;
+  rgb_out |= (buf_data<<8) & 0xFF00;
+
+  p_draw_frame_buf[y_pos * LCD_WIDTH + x_pos] = rgb_out;
 }
 
 void lcdPrintfResize(int x, int y, uint16_t color,  float ratio_h, const char *fmt, ...)
@@ -1038,13 +1056,13 @@ image_t lcdCreateImage(lvgl_img_t *p_lvgl, int16_t x, int16_t y, int16_t w, int1
   return ret;
 }
 
-void lcdDrawImage(image_t *p_img, int16_t draw_x, int16_t draw_y)
+void IRAM_ATTR lcdDrawImage(image_t *p_img, int16_t draw_x, int16_t draw_y)
 {
   int16_t o_x;
   int16_t o_y;  
   int16_t o_w;
   int16_t o_h;
-  uint16_t *p_data;
+  const uint16_t *p_data;
   uint16_t pixel;
   int16_t img_x = 0;
   int16_t img_y = 0;
@@ -1076,18 +1094,24 @@ void lcdDrawImage(image_t *p_img, int16_t draw_x, int16_t draw_y)
         lcdDrawPixel(draw_x+xi, draw_y+yi, pixel);
       }
     }
+    delay(1);
   }  
 }
 
 void lcdLogoOn(void)
 {
   image_t logo;
+  int16_t x, y;
   
   logo = lcdCreateImage(&logo_img, 0, 0, 0, 0);
-  lcdDrawImage(&logo, 0, 0);
 
-  lcdDrawRect(0, 0, LCD_WIDTH-0, LCD_HEIGHT-0, green);
-  lcdDrawRect(1, 1, LCD_WIDTH-2, LCD_HEIGHT-2, green);
+  x = (lcdGetWidth() - logo.w) / 2;
+  y = (lcdGetHeight() - logo.h) / 2;
+
+  lcdDrawImage(&logo, x, y);
+
+  lcdDrawRect(0, 0, LCD_WIDTH-0, LCD_HEIGHT-0, white);
+  lcdDrawRect(1, 1, LCD_WIDTH-2, LCD_HEIGHT-2, white);
 
   lcdUpdateDraw();
 
@@ -1114,6 +1138,12 @@ void cliLcd(cli_args_t *args)
   bool ret = false;
 
 
+  if (args->argc == 1 && args->isStr(0, "logo") == true)
+  {
+    lcdLogoOn();
+    ret = true;
+  }
+ 
   if (args->argc == 1 && args->isStr(0, "test") == true)
   {
     uint8_t cnt = 0;
@@ -1165,6 +1195,7 @@ void cliLcd(cli_args_t *args)
 
   if (ret != true)
   {
+    cliPrintf("lcd logo\n");
     cliPrintf("lcd test\n");
     cliPrintf("lcd bl 0~100\n");
   }
