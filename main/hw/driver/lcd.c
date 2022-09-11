@@ -1094,7 +1094,6 @@ void IRAM_ATTR lcdDrawImage(image_t *p_img, int16_t draw_x, int16_t draw_y)
         lcdDrawPixel(draw_x+xi, draw_y+yi, pixel);
       }
     }
-    delay(1);
   }  
 }
 
