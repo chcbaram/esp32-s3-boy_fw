@@ -114,7 +114,13 @@ typedef struct lcd_driver_t_
 
 
 #ifdef HW_LCD_LVGL
+
+#ifdef __cplusplus
+#define LVGL_IMG_DEF(var_name) extern "C" lvgl_img_t var_name;
+#else
 #define LVGL_IMG_DEF(var_name) extern lvgl_img_t var_name;
+#endif
+
 #endif
 
 typedef struct

@@ -72,6 +72,8 @@ static bool is_logo_on = false;
 
 static uint16_t *p_draw_frame_buf = NULL;
 static uint16_t __attribute__((aligned(64))) frame_buffer[1][HW_LCD_WIDTH * HW_LCD_HEIGHT];
+//static uint16_t __attribute__((aligned(64))) *frame_buffer[1];
+
 
 static uint16_t __attribute__((aligned(64))) font_src_buffer[16 * 16];
 static uint16_t __attribute__((aligned(64))) font_dst_buffer[LCD_FONT_RESIZE_WIDTH * LCD_FONT_RESIZE_WIDTH];
@@ -119,16 +121,13 @@ bool lcdInit(void)
 
   lcd.setCallBack(transferDoneISR);
 
+  //frame_buffer[0] = heap_caps_malloc(LCD_WIDTH * LCD_HEIGHT * sizeof(uint16_t), MALLOC_CAP_DMA | MALLOC_CAP_SPIRAM | MALLOC_CAP_32BIT);
 
-  for (int i=0; i<LCD_WIDTH*LCD_HEIGHT; i++)
-  {
-    frame_buffer[0][i] = black;
-  }
-  memset(frame_buffer, 0x00, sizeof(frame_buffer));
+  memset(frame_buffer[0], 0x00, LCD_WIDTH * LCD_HEIGHT * sizeof(uint16_t));
 
   p_draw_frame_buf = frame_buffer[frame_index];
-
   lcdSetBackLight(100);
+
 
   #if HW_LCD_LOGO > 0
   lcdLogoOn();
@@ -194,7 +193,7 @@ LCD_OPT_DEF uint32_t lcdReadPixel(uint16_t x_pos, uint16_t y_pos)
   return p_draw_frame_buf[y_pos * LCD_WIDTH + x_pos];
 }
 
-LCD_OPT_DEF inline void lcdDrawPixel(int16_t x_pos, int16_t y_pos, uint32_t rgb_code)
+LCD_OPT_DEF inline void IRAM_ATTR lcdDrawPixel(int16_t x_pos, int16_t y_pos, uint32_t rgb_code)
 {
   uint16_t rgb_out;
 
@@ -1056,10 +1055,10 @@ image_t lcdCreateImage(lvgl_img_t *p_lvgl, int16_t x, int16_t y, int16_t w, int1
   return ret;
 }
 
-void IRAM_ATTR lcdDrawImage(image_t *p_img, int16_t draw_x, int16_t draw_y)
+LCD_OPT_DEF void IRAM_ATTR lcdDrawImage(image_t *p_img, int16_t draw_x, int16_t draw_y)
 {
-  int16_t o_x;
-  int16_t o_y;  
+  int32_t o_x;
+  int32_t o_y;  
   int16_t o_w;
   int16_t o_h;
   const uint16_t *p_data;
@@ -1107,7 +1106,8 @@ void lcdLogoOn(void)
   x = (lcdGetWidth() - logo.w) / 2;
   y = (lcdGetHeight() - logo.h) / 2;
 
-  lcdDrawImage(&logo, x, y);
+  lcdClearBuffer(black);
+  lcdDrawImage(&logo, x, y - 16);
 
   lcdDrawRect(0, 0, LCD_WIDTH-0, LCD_HEIGHT-0, white);
   lcdDrawRect(1, 1, LCD_WIDTH-2, LCD_HEIGHT-2, white);
@@ -1137,6 +1137,16 @@ void cliLcd(cli_args_t *args)
   bool ret = false;
 
 
+  if (args->argc == 1 && args->isStr(0, "info") == true)
+  {
+    cliPrintf("Driver : ST7789\n");
+    cliPrintf("Width  : %d\n", LCD_WIDTH);
+    cliPrintf("Height : %d\n", LCD_HEIGHT);
+    cliPrintf("Free Heap  : %ld KB\n", esp_get_free_heap_size()/1024);
+    cliPrintf("Free Heapi : %d KB\n", esp_get_free_internal_heap_size()/1024);
+    ret = true;
+  }
+
   if (args->argc == 1 && args->isStr(0, "logo") == true)
   {
     lcdLogoOn();
@@ -1151,8 +1161,12 @@ void cliLcd(cli_args_t *args)
 
     while(cliKeepLoop())
     {
+      uint32_t pre_time;
+      uint32_t exe_time;
+
       if (lcdDrawAvailable() == true)
       {
+        pre_time = micros();
         lcdClearBuffer(black);
 
         lcdPrintf(25,16*0, green, "[LCD 테스트]");
@@ -1169,6 +1183,8 @@ void cliLcd(cli_args_t *args)
         lcdDrawFillRect(20, 70, 10, 10, blue);
 
         lcdDrawFillRect(0, 120, 240, 120, green);
+        exe_time = micros()-pre_time;
+        lcdPrintf(0, 120, red, "draw %d us", exe_time);
 
         lcdRequestDraw();
       }
@@ -1194,6 +1210,7 @@ void cliLcd(cli_args_t *args)
 
   if (ret != true)
   {
+    cliPrintf("lcd info\n");
     cliPrintf("lcd logo\n");
     cliPrintf("lcd test\n");
     cliPrintf("lcd bl 0~100\n");

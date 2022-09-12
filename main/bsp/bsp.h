@@ -27,6 +27,7 @@ extern "C" {
 #include "esp_timer.h"
 #include "esp_psram.h"
 #include "esp_flash.h"
+#include "hal/cache_hal.h"
 
 #if 0
 #define _USE_LOG_PRINT    1

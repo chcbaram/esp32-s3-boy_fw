@@ -11,7 +11,6 @@
 #include "hw.h"
 
 
-
 static void bootMsg(void);
 
 
@@ -21,8 +20,12 @@ bool hwInit(void)
 {
   bspInit();
 
+
   cliInit();
   logInit();
+
+
+
   ledInit();
   gpioInit();
   cdcInit();
@@ -34,8 +37,10 @@ bool hwInit(void)
   logPrintf("\r\n[ Firmware Begin... ]\r\n");
   logPrintf("Booting..Name \t\t: %s\r\n", _DEF_BOARD_NAME);
   logPrintf("Booting..Ver  \t\t: %s\r\n", _DEF_FIRMWATRE_VERSION);  
-
+  
   lcdInit();
+  cache_hal_init();
+
 
 
   return true;
@@ -66,5 +71,6 @@ void bootMsg(void)
   logPrintf("SPI PSRAM : %dMB\n", esp_psram_get_size()/1024/1024);
 
   logPrintf("Free heap : %ld KB\n", esp_get_free_heap_size()/1024);
+  logPrintf("Free Heapi: %d KB\n", esp_get_free_internal_heap_size()/1024);
   logPrintf("CPU Freq  : %lu Mhz\n", bspGetCpuFreqMhz());
 }

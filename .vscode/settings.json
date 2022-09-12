@@ -12,7 +12,9 @@
     "tuple": "c",
     "type_traits": "c",
     "utility": "c",
-    "st7789.h": "c"
+    "st7789.h": "c",
+    "esp_flash.h": "c",
+    "cache_hal.h": "c"
   },
   
   "command-runner.terminal.name": "zsh",
