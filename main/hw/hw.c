@@ -39,9 +39,6 @@ bool hwInit(void)
   logPrintf("Booting..Ver  \t\t: %s\r\n", _DEF_FIRMWATRE_VERSION);  
   
   lcdInit();
-  cache_hal_init();
-
-
 
   return true;
 }
