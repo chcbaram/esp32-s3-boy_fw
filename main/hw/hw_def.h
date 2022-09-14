@@ -21,6 +21,7 @@
 
 #define _USE_HW_RTOS
 #define _USE_HW_CDC
+#define _USE_HW_FILES
 
 
 #define _USE_HW_LED
