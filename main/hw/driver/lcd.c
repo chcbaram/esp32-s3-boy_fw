@@ -122,12 +122,15 @@ bool lcdInit(void)
   lcd.setCallBack(transferDoneISR);
 
   //frame_buffer[0] = heap_caps_malloc(LCD_WIDTH * LCD_HEIGHT * sizeof(uint16_t), MALLOC_CAP_DMA | MALLOC_CAP_SPIRAM | MALLOC_CAP_32BIT);
-
   memset(frame_buffer[0], 0x00, LCD_WIDTH * LCD_HEIGHT * sizeof(uint16_t));
+
+  if (is_init == true)
+    logPrintf("[OK] st7789Init()\n");
+  else
+    logPrintf("[NG] st7789Init()\n");
 
   p_draw_frame_buf = frame_buffer[frame_index];
   lcdSetBackLight(100);
-
 
   #if HW_LCD_LOGO > 0
   lcdLogoOn();

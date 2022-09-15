@@ -11,12 +11,22 @@
 #include "ap.h"
 
 
+static void cliThread(void *args);
+
+
 
 
 
 void apInit(void)
 {
-  cliOpen(_DEF_UART2, 115200);
+  cliOpen(_DEF_UART1, 115200);
+
+  if (xTaskCreate(cliThread, "cliThread", 4096, NULL, 5, NULL) != pdPASS)
+  {
+    logPrintf("[NG] cliThread()\n");   
+  }  
+
+  delay(500);
 }
 
 void apMain(void)
@@ -33,7 +43,25 @@ void apMain(void)
       ledToggle(_DEF_LED1);
     }
 
-    cliMain();
+
+    if (lcdDrawAvailable() == true)
+    {
+      lcdClearBuffer(black);
+
+      lcdPrintf(0,16*0, white, "SD : %s", sdIsDetected() == true ? "Present" : "Empty");
+      lcdPrintf(0,16*1, white, "     %s", sdGetStateMsg());
+     
+      lcdRequestDraw();
+    }
     delay(1);   
+  }
+}
+
+void cliThread(void *args)
+{
+  while(1)
+  {
+    cliMain();
+    delay(2);
   }
 }

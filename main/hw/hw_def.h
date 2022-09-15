@@ -21,7 +21,6 @@
 
 #define _USE_HW_RTOS
 #define _USE_HW_CDC
-#define _USE_HW_FILES
 
 
 #define _USE_HW_LED
@@ -51,6 +50,8 @@
 #define _USE_HW_ST7789
 #define      HW_LCD_WIDTH           240
 #define      HW_LCD_HEIGHT          240
+
+#define _USE_HW_SD
 
 
 
