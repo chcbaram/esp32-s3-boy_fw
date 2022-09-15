@@ -205,6 +205,8 @@ void cliSd(cli_args_t *args)
   {
     cliPrintf("sd init      : %d\n", is_init);
     cliPrintf("sd connected : %d\n", sdIsDetected());
+    cliPrintf("sd host freq : %d KHz\n", host.max_freq_khz);
+    cliPrintf("sd card freq : %d KHz\n", card.max_freq_khz);
 
     ret = true;
   }
