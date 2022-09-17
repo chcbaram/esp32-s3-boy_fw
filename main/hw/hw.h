@@ -22,7 +22,8 @@ extern "C" {
 #include "log.h"
 #include "cdc.h"
 #include "lcd.h"
-
+#include "sd.h"
+#include "fatfs.h"
 
 
 bool hwInit(void);
