@@ -41,6 +41,7 @@ bool hwInit(void)
   
   lcdInit();
   sdInit();
+  fatfsInit();
 
   return true;
 }

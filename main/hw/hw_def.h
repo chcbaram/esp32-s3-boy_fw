@@ -19,8 +19,15 @@
 
 
 
+#define _HW_DEF_RTOS_THREAD_PRI_SD            5
+
+#define _HW_DEF_RTOS_THREAD_MEM_SD            (4*1024)
+
+
+
 #define _USE_HW_RTOS
 #define _USE_HW_CDC
+#define _USE_HW_FATFS
 
 
 #define _USE_HW_LED

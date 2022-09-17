@@ -16,6 +16,8 @@ static void cliSd(cli_args_t *args);
 #define lock()      xSemaphoreTake(mutex_lock, portMAX_DELAY);
 #define unLock()    xSemaphoreGive(mutex_lock);
 
+#define SD_EVENT_FUNC_MAX    8
+
 
 static void sdThread(void *args);
 
@@ -27,6 +29,8 @@ static sdmmc_card_t card;
 static sdmmc_host_t host = SDMMC_HOST_DEFAULT();
 static sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
 static sd_state_t sd_state = SDCARD_IDLE;
+static uint8_t sd_event_index = 0;
+static void (*sd_event_func[SD_EVENT_FUNC_MAX])(sd_event_t);
 
 
 
@@ -54,7 +58,7 @@ bool sdInit(void)
 
   logPrintf("[%s] sdIsDetected()\n", sdIsDetected()== true ? "OK":"NG");
 
-  if (xTaskCreate(sdThread, "sdThread", 4096, NULL, 5, NULL) != pdPASS)
+  if (xTaskCreate(sdThread, "sdThread", _HW_DEF_RTOS_THREAD_MEM_SD, NULL, _HW_DEF_RTOS_THREAD_PRI_SD, NULL) != pdPASS)
   {
     logPrintf("[NG] sdThread()\n");   
   }
@@ -69,28 +73,54 @@ bool sdInit(void)
   return true;
 }
 
+bool sdAddEventFunc(void (*p_func)(sd_event_t))
+{
+  if (sd_event_index >= SD_EVENT_FUNC_MAX) return false;
+
+
+  sd_event_func[sd_event_index] = p_func;
+  sd_event_index++;
+
+  return true;
+}
+
+bool sdSendEvent(sd_event_t *p_sd_event)
+{
+ 
+  for (int i=0; i<sd_event_index; i++)
+  {
+    sd_event_func[i](*p_sd_event);
+  }
+
+  return true;
+}
+
 void sdThread(void *args)
 {
   uint32_t pre_time;
   uint8_t err_cnt = 0;
+  sd_event_t sd_event;
+  sd_state_t pre_state;
 
 
   pre_time = millis();
   while(1) 
   {
+    pre_state = sd_state;
+
     switch(sd_state)
     {
       case SDCARD_IDLE:
         if (sdIsDetected() == true)
         {
           sd_state = SDCARD_CONNECTTING;
-          logPrintf("SDCARD_CONNECTING\n");
+          logPrintf("[__] SDCARD_CONNECTING\n");
           pre_time = millis();
         }
         else
         {
           sd_state = SDCARD_DISCONNECTED;
-          logPrintf("SDCARD_DISCONNECTED\n");
+          logPrintf("[__] SDCARD_DISCONNECTED\n");
           err_cnt = 0;
         }
         break;
@@ -102,12 +132,12 @@ void sdThread(void *args)
           if (is_init == true)
           {
             sd_state = SDCARD_CONNECTED;
-            logPrintf("SDCARD_CONNECTED\n");
+            logPrintf("[__] SDCARD_CONNECTED\n");
           }
           else
           {
             sd_state = SDCARD_ERROR;
-            logPrintf("SDCARD_ERROR\n");        
+            logPrintf("[__] SDCARD_ERROR\n");        
             pre_time = millis();  
           }
         }
@@ -143,6 +173,14 @@ void sdThread(void *args)
         }
         break;
     }
+
+    if (pre_state != sd_state)
+    {
+      sd_event.sd_state = sd_state;
+      sd_event.sd_arg = &card;
+      sdSendEvent(&sd_event);
+    }
+
     delay(10);
   }
 }

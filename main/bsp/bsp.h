@@ -29,6 +29,10 @@ extern "C" {
 #include "esp_flash.h"
 #include "hal/cache_hal.h"
 
+#include "esp_vfs.h"
+#include "esp_vfs_fat.h"
+
+
 #if 0
 #define _USE_LOG_PRINT    1
 

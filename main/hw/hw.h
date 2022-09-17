@@ -23,6 +23,7 @@ extern "C" {
 #include "cdc.h"
 #include "lcd.h"
 #include "sd.h"
+#include "fatfs.h"
 
 
 bool hwInit(void);
