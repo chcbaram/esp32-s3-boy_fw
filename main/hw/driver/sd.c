@@ -167,6 +167,9 @@ void sdThread(void *args)
           pre_time = millis();
           if (sdIsDetected() == true && err_cnt < 3)
           {
+            host.deinit();
+            host.init();
+            sdmmc_host_init_slot(host.slot, &slot_config);
             sd_state = SDCARD_IDLE;
           }
           err_cnt++;
