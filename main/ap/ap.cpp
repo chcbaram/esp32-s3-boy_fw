@@ -15,6 +15,7 @@ static void cliThread(void *args);
 
 static void updateSdCard(void);
 static void updateFatfs(void);
+static void updateLcd(void);
 
 
 
@@ -51,6 +52,7 @@ void apMain(void)
 
       updateSdCard();     
       updateFatfs();
+      updateLcd();
 
       lcdRequestDraw();
     }
@@ -116,6 +118,11 @@ void updateFatfs(void)
 
     fatfsUnLock();
   }
+}
+
+void updateLcd(void)
+{
+  lcdPrintf(0,16*5, white, "BKL: %d%%", lcdGetBackLight());
 }
 
 void cliThread(void *args)

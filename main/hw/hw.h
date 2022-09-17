@@ -24,6 +24,8 @@ extern "C" {
 #include "lcd.h"
 #include "sd.h"
 #include "fatfs.h"
+#include "pwm.h"
+#include "nvs.h"
 
 
 bool hwInit(void);

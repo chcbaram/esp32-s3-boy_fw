@@ -24,10 +24,9 @@ bool hwInit(void)
   cliInit();
   logInit();
 
-
-
   ledInit();
   gpioInit();
+  pwmInit();
   cdcInit();
   uartInit();
   uartOpen(_DEF_UART1, 115200);
@@ -38,7 +37,8 @@ bool hwInit(void)
   logPrintf("Booting..Name \t\t: %s\r\n", _DEF_BOARD_NAME);
   logPrintf("Booting..Ver  \t\t: %s\r\n", _DEF_FIRMWATRE_VERSION);  
   logPrintf("\n");
-  
+
+  nvsInit();
   lcdInit();
   sdInit();
   fatfsInit();

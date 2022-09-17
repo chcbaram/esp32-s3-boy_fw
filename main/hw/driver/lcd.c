@@ -87,6 +87,8 @@ LVGL_IMG_DEF(logo_img);
 static void disHanFont(int x, int y, han_font_t *FontPtr, uint16_t textcolor);
 static void disEngFont(int x, int y, char ch, lcd_font_t *font, uint16_t textcolor);
 static void lcdDrawLineBuffer(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color, lcd_pixel_t *line);
+static bool lcdLoadCfg(void);
+static bool lcdSaveCfg(void);
 
 
 #ifdef _USE_HW_CLI
@@ -116,6 +118,10 @@ bool lcdInit(void)
   backlight_value = 100;
 
 
+  lcdLoadCfg();
+  lcdSetBackLight(backlight_value);
+
+
   is_init = st7789Init();
   st7789InitDriver(&lcd);
 
@@ -130,7 +136,6 @@ bool lcdInit(void)
     logPrintf("[NG] st7789Init()\n");
 
   p_draw_frame_buf = frame_buffer[frame_index];
-  lcdSetBackLight(100);
 
   #if HW_LCD_LOGO > 0
   lcdLogoOn();
@@ -146,6 +151,45 @@ bool lcdInit(void)
 #endif
 
   return true;
+}
+
+bool lcdLoadCfg(void)
+{
+  bool ret = true;
+  esp_err_t err;
+  nvs_handle_t nvs_h;
+
+  err = nvs_open("storage", NVS_READWRITE, &nvs_h);
+  if (err == ESP_OK)
+  {
+    uint8_t pwm_value = backlight_value;
+
+    if (nvs_get_u8(nvs_h, "lcd_cfg_pwm", &pwm_value) == ESP_ERR_NVS_NOT_FOUND)
+    {
+      pwm_value = backlight_value;
+    }
+    backlight_value = pwm_value;
+    nvs_close(nvs_h);
+  }
+
+  return ret;
+}
+
+bool lcdSaveCfg(void)
+{
+  bool ret = true;
+  esp_err_t err;
+  nvs_handle_t nvs_h;
+
+  err = nvs_open("storage", NVS_READWRITE, &nvs_h);
+  if (err == ESP_OK)
+  {
+    nvs_set_u8(nvs_h, "lcd_cfg_pwm", backlight_value);
+    nvs_commit(nvs_h);
+    nvs_close(nvs_h);
+  }
+
+  return ret;
 }
 
 uint32_t lcdGetDrawTime(void)
@@ -177,8 +221,10 @@ void lcdSetBackLight(uint8_t value)
     backlight_value = value;
   }
 
+  lcdSaveCfg();
+
 #ifdef _USE_HW_PWM
-  pwmWrite(0, cmap(value, 0, 100, 0, 255));
+  pwmWrite(0, cmap(value, 0, 100, 0, pwmGetMax(0)));
 #else
   if (backlight_value > 0)
   {
@@ -1145,6 +1191,7 @@ void cliLcd(cli_args_t *args)
     cliPrintf("Driver : ST7789\n");
     cliPrintf("Width  : %d\n", LCD_WIDTH);
     cliPrintf("Height : %d\n", LCD_HEIGHT);
+    cliPrintf("BKL    : %d%%\n", lcdGetBackLight());
     cliPrintf("Free Heap  : %ld KB\n", esp_get_free_heap_size()/1024);
     cliPrintf("Free Heapi : %d KB\n", esp_get_free_internal_heap_size()/1024);
     ret = true;
