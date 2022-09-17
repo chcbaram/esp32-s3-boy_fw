@@ -83,6 +83,7 @@ void updateFatfs(void)
 
   if (d != NULL)
   {
+    fatfsLock();
     while ((dir = readdir(d)) != NULL) 
     {
       if (dir-> d_type != DT_DIR) 
@@ -112,6 +113,8 @@ void updateFatfs(void)
       }
     }
     closedir(d);
+
+    fatfsUnLock();
   }
 }
 

@@ -21,7 +21,8 @@ extern "C" {
 bool fatfsInit(void);
 bool fatfsIsInit(void);
 bool fatfsIsMounted(void);
-
+bool fatfsLock(void);
+bool fatfsUnLock(void);
 
 #endif
 

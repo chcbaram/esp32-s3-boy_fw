@@ -10,6 +10,10 @@
 #include "diskio_sdmmc.h"
 
 
+#define lock()      xSemaphoreTake(mutex_lock, portMAX_DELAY);
+#define unLock()    xSemaphoreGive(mutex_lock);
+
+
 #ifdef _USE_HW_CLI
 static void cliFatfs(cli_args_t *args);
 #endif
@@ -22,6 +26,7 @@ static void fatfsSdEvent(sd_event_t);
 static bool is_init = false;
 static bool is_mounted = false;
 
+static SemaphoreHandle_t mutex_lock;
 static char *base_path = "/sdcard";
 static BYTE drive_number = FF_DRV_NOT_USED;
 static sdmmc_card_t *p_sdcard = NULL;
@@ -38,6 +43,9 @@ static esp_vfs_fat_sdmmc_mount_config_t fat_mount_config =
 
 bool fatfsInit(void)
 {
+  mutex_lock = xSemaphoreCreateMutex();
+
+
   ff_diskio_get_drive(&drive_number);
   logPrintf("[%s] ff_diskio_get_drive()\n", drive_number != FF_DRV_NOT_USED ? "OK" : "NG");
   if (drive_number == FF_DRV_NOT_USED) 
@@ -66,23 +74,41 @@ bool fatfsIsMounted(void)
   return is_mounted;
 }
 
+bool fatfsLock(void)
+{
+  lock();
+  return true;
+}
+
+bool fatfsUnLock(void)
+{
+  unLock();
+  return true;
+}
+
 void fatfsSdEvent(sd_event_t sd_event)
 {
   switch(sd_event.sd_state)
   {
     case SDCARD_CONNECTED:
       p_sdcard = sd_event.sd_arg;
+      lock();
       fatfsMount();
+      unLock();
       break;
   
     case SDCARD_DISCONNECTED:
       p_sdcard = sd_event.sd_arg;
+      lock();
       fatfsUnMount();
+      unLock();
       break;
 
     case SDCARD_ERROR:
       p_sdcard = sd_event.sd_arg;
+      lock();
       fatfsUnMount();
+      unLock();
       break;
 
     default:
@@ -159,6 +185,7 @@ bool fatfsUnMount(void)
   bool ret = true;
 
   if (is_mounted == false) return false;
+  is_mounted = false;
 
   // unmount
   char drv[3] = {(char)('0' + drive_number), ':', 0};
@@ -168,8 +195,6 @@ bool fatfsUnMount(void)
   esp_vfs_fat_unregister_path(base_path);
 
   logPrintf("[OK] fatfsUnMount()\n");
-
-  is_mounted = false;
 
   return ret;
 }
