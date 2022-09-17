@@ -14,7 +14,7 @@
 
 
 
-#define _DEF_FIRMWATRE_VERSION    "V220827R1"
+#define _DEF_FIRMWATRE_VERSION    "V220917R1"
 #define _DEF_BOARD_NAME           "ESP32-S3-BOY_FW"
 
 
