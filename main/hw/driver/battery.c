@@ -110,6 +110,8 @@ void batteryThread(void *args)
   int32_t adc_value;
   float adc_vol;
   float bat_vol;
+  uint8_t dif_cnt = 0;
+  uint8_t state = 0;
 
 
   while(1) 
@@ -130,10 +132,40 @@ void batteryThread(void *args)
 
     percent = (int32_t)cmap(adc_vol, bat_min, bat_max, 0, 100);
 
+
+    switch(state)
+    {
+      case 0:
+        if (bat_info.percent != percent)
+        {
+          dif_cnt = 0;
+          state = 1;
+        }
+        break;
+      
+      case 1:
+        dif_cnt++;
+        if (dif_cnt >= 100)
+        {
+          state = 2;
+        }
+        if (bat_info.percent == percent)
+        {
+          state = 0;
+        }
+        break;
+
+      case 2:
+        lock();
+        bat_info.percent = percent;
+        unLock();
+        state = 0;
+        break;
+    }
+
     lock();
     bat_info.adc_raw = adc_value;
     bat_info.voltage = bat_vol;
-    bat_info.percent = percent;
     unLock();
 
     delay(10);
