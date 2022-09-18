@@ -17,6 +17,9 @@ static void updateSdCard(void);
 static void updateFatfs(void);
 static void updateLcd(void);
 static void updateBat(void);
+static void updateButton(void);
+
+
 
 
 
@@ -24,7 +27,7 @@ void apInit(void)
 {
   cliOpen(_DEF_UART1, 115200);
 
-  if (xTaskCreate(cliThread, "cliThread", 4096, NULL, 5, NULL) != pdPASS)
+  if (xTaskCreate(cliThread, "cliThread", _HW_DEF_RTOS_THREAD_MEM_CLI, NULL, _HW_DEF_RTOS_THREAD_PRI_CLI, NULL) != pdPASS)
   {
     logPrintf("[NG] cliThread()\n");   
   }  
@@ -55,6 +58,7 @@ void apMain(void)
       updateFatfs();
       updateLcd();
       updateBat();
+      updateButton();
 
       lcdRequestDraw();
     }
@@ -130,6 +134,19 @@ void updateLcd(void)
 void updateBat(void)
 {
   lcdPrintf(0,16*6, white, "BAT: %-3d%% %1.2fV", batteryGetPercent(), batteryGetVoltage());
+}
+
+void updateButton(void)
+{
+  for (int i=0; i<BUTTON_MAX_CH; i++)
+  {
+    if (buttonGetPressed(i) == true)
+    {
+      lcdPrintf(0,16*7, white, "BTN: %-12s %dms", buttonGetName(i), buttonGetPressedTime(i));
+      break;
+    }
+  }
+  lcdPrintf(0,16*7, white, "BTN:");
 }
 
 void cliThread(void *args)

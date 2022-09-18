@@ -28,6 +28,7 @@ extern "C" {
 #include "nvs.h"
 #include "adc.h"
 #include "battery.h"
+#include "button.h"
 
 
 bool hwInit(void);

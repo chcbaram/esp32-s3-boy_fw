@@ -40,6 +40,7 @@ bool hwInit(void)
 
   nvsInit();
   adcInit();
+  buttonInit();
 
   batteryInit();
   lcdInit();
