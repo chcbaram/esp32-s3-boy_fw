@@ -58,7 +58,7 @@ bool batteryInit(void)
     adc_data[i] = adcRead12(adc_ch);
   }
 
-  if (xTaskCreate(batteryThread, "batteryThread", _HW_DEF_RTOS_THREAD_MEM_SD, NULL, _HW_DEF_RTOS_THREAD_PRI_SD, NULL) != pdPASS)
+  if (xTaskCreate(batteryThread, "batteryThread", _HW_DEF_RTOS_THREAD_MEM_BATTERY, NULL, _HW_DEF_RTOS_THREAD_PRI_BATTERY, NULL) != pdPASS)
   {
     logPrintf("[NG] batteryThread()\n");   
   }
@@ -136,30 +136,39 @@ void batteryThread(void *args)
     switch(state)
     {
       case 0:
+        lock();
+        bat_info.adc_raw = adc_value;
+        bat_info.voltage = bat_vol;
+        bat_info.percent = percent;
+        unLock();
+        state = 1;
+        break;
+
+      case 1:
         if (bat_info.percent != percent)
         {
           dif_cnt = 0;
-          state = 1;
+          state = 2;
         }
         break;
       
-      case 1:
+      case 2:
         dif_cnt++;
         if (dif_cnt >= 100)
         {
-          state = 2;
+          state = 3;
         }
         if (bat_info.percent == percent)
         {
-          state = 0;
+          state = 1;
         }
         break;
 
-      case 2:
+      case 3:
         lock();
         bat_info.percent = percent;
         unLock();
-        state = 0;
+        state = 1;
         break;
     }
 
