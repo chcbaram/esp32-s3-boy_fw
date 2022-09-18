@@ -43,6 +43,8 @@ bool hwInit(void)
   buttonInit();
 
   batteryInit();
+  i2sInit();
+  
   lcdInit();
   sdInit();
   fatfsInit();

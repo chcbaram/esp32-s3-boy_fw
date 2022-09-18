@@ -29,6 +29,8 @@ extern "C" {
 #include "adc.h"
 #include "battery.h"
 #include "button.h"
+#include "mixer.h"
+#include "i2s.h"
 
 
 bool hwInit(void);

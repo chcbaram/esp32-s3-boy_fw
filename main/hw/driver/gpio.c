@@ -29,7 +29,7 @@ static const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
       {GPIO_NUM_16, _DEF_OUTPUT, _DEF_LOW }, // 1. LCD DC
       {GPIO_NUM_4 , _DEF_OUTPUT, _DEF_LOW }, // 2. LCD BLK      
       {GPIO_NUM_5 , _DEF_OUTPUT, _DEF_HIGH}, // 3. LCD RST
-      {GPIO_NUM_38, _DEF_OUTPUT, _DEF_LOW }, // 4. SPK MUTE
+      {GPIO_NUM_38, _DEF_OUTPUT, _DEF_HIGH }, // 4. SPK MUTE
       {GPIO_NUM_17, _DEF_INPUT , _DEF_HIGH}, // 5. SDCARD CD
     };
 
