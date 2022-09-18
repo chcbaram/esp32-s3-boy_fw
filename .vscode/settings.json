@@ -14,7 +14,9 @@
     "utility": "c",
     "st7789.h": "c",
     "esp_flash.h": "c",
-    "cache_hal.h": "c"
+    "cache_hal.h": "c",
+    "adc.h": "c",
+    "hw_def.h": "c"
   },
   
   "command-runner.terminal.name": "zsh",

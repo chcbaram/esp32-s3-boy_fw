@@ -20,8 +20,10 @@
 
 
 #define _HW_DEF_RTOS_THREAD_PRI_SD            5
+#define _HW_DEF_RTOS_THREAD_PRI_BATTERY       5
 
 #define _HW_DEF_RTOS_THREAD_MEM_SD            (4*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_BATTERY       (1*1024)
 
 
 
@@ -30,6 +32,8 @@
 #define _USE_HW_SD
 #define _USE_HW_FATFS
 #define _USE_HW_NVS
+#define _USE_HW_BATTERY
+
 
 
 #define _USE_HW_LED
@@ -63,6 +67,8 @@
 #define _USE_HW_PWM
 #define      HW_PWM_MAX_CH          1
 
+#define _USE_HW_ADC                 
+#define      HW_ADC_MAX_CH          1
 
 
 #define _PIN_GPIO_LCD_BLK           2

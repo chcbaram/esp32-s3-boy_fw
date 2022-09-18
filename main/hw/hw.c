@@ -39,6 +39,9 @@ bool hwInit(void)
   logPrintf("\n");
 
   nvsInit();
+  adcInit();
+
+  batteryInit();
   lcdInit();
   sdInit();
   fatfsInit();

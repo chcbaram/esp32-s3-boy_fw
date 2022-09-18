@@ -26,6 +26,8 @@ extern "C" {
 #include "fatfs.h"
 #include "pwm.h"
 #include "nvs.h"
+#include "adc.h"
+#include "battery.h"
 
 
 bool hwInit(void);

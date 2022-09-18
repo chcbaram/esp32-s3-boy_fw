@@ -16,6 +16,7 @@ static void cliThread(void *args);
 static void updateSdCard(void);
 static void updateFatfs(void);
 static void updateLcd(void);
+static void updateBat(void);
 
 
 
@@ -53,6 +54,7 @@ void apMain(void)
       updateSdCard();     
       updateFatfs();
       updateLcd();
+      updateBat();
 
       lcdRequestDraw();
     }
@@ -123,6 +125,11 @@ void updateFatfs(void)
 void updateLcd(void)
 {
   lcdPrintf(0,16*5, white, "BKL: %d%%", lcdGetBackLight());
+}
+
+void updateBat(void)
+{
+  lcdPrintf(0,16*6, white, "BAT: %-3d%% %1.2fV", batteryGetPercent(), batteryGetVoltage());
 }
 
 void cliThread(void *args)
