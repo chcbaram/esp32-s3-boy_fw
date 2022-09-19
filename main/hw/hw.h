@@ -31,6 +31,8 @@ extern "C" {
 #include "button.h"
 #include "mixer.h"
 #include "i2s.h"
+#include "audio.h"
+#include "buzzer.h"
 
 
 bool hwInit(void);

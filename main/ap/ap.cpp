@@ -18,8 +18,10 @@ static void updateFatfs(void);
 static void updateLcd(void);
 static void updateBat(void);
 static void updateButton(void);
+static void updateAudio(void);
 
 
+static audio_t audio;
 
 
 
@@ -40,6 +42,8 @@ void apMain(void)
   uint32_t pre_time;
 
 
+  audioOpen(&audio);
+
   pre_time = millis();
   while(1)
   {
@@ -59,6 +63,7 @@ void apMain(void)
       updateLcd();
       updateBat();
       updateButton();
+      updateAudio();
 
       lcdRequestDraw();
     }
@@ -147,6 +152,29 @@ void updateButton(void)
     }
   }
   lcdPrintf(0,16*7, white, "BTN:");
+}
+
+void updateAudio(void)
+{
+  lcdPrintf(0,16*8, white, "AUD: test.wav");
+
+  if (audioIsPlaying(&audio) == true)
+    lcdPrintf(0,16*9, white, "     Playing..");
+  else
+    lcdPrintf(0,16*9, white, "     Stop..");
+  
+  if (buttonGetPressedEvent(_BTN_SELECT) == true)
+  {
+    if (audioIsPlaying(&audio) == true)
+      audioStopFile(&audio);
+    else
+      audioPlayFile(&audio, "/sdcard/test.wav", false);
+  }
+
+  if (buttonGetPressedEvent(_BTN_A) == true)
+  {
+    buzzerBeep(100);
+  }
 }
 
 void cliThread(void *args)

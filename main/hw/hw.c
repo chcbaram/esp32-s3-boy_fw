@@ -44,6 +44,8 @@ bool hwInit(void)
 
   batteryInit();
   i2sInit();
+  audioInit();
+  buzzerInit();
   
   lcdInit();
   sdInit();

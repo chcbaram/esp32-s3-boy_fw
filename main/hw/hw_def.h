@@ -24,12 +24,14 @@
 #define _HW_DEF_RTOS_THREAD_PRI_BATTERY       5
 #define _HW_DEF_RTOS_THREAD_PRI_BUTTON        5
 #define _HW_DEF_RTOS_THREAD_PRI_I2S           5
+#define _HW_DEF_RTOS_THREAD_PRI_AUDIO         5
 
 #define _HW_DEF_RTOS_THREAD_MEM_CLI           (4*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_SD            (4*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_BATTERY       (1*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_BUTTON        (1*1024)
 #define _HW_DEF_RTOS_THREAD_MEM_I2S           (4*1024)
+#define _HW_DEF_RTOS_THREAD_MEM_AUDIO         (4*1024)
 
 
 #define _USE_HW_RTOS
@@ -84,6 +86,8 @@
 #define      HW_MIXER_MAX_CH        8
 #define      HW_MIXER_MAX_BUF_LEN   (16*4*8)
 
+#define _USE_HW_AUDIO
+#define      HW_AUDIO_CMD_MAX_CH    4
 
 
 #define _PIN_GPIO_LCD_BLK           2
