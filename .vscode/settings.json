@@ -16,7 +16,9 @@
     "esp_flash.h": "c",
     "cache_hal.h": "c",
     "adc.h": "c",
-    "hw_def.h": "c"
+    "hw_def.h": "c",
+    "typeinfo": "c",
+    "hw.h": "c"
   },
   
   "command-runner.terminal.name": "zsh",

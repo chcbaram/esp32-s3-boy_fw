@@ -14,6 +14,11 @@ file(GLOB_RECURSE SRC_FILES_RECURSE
   common/*.c 
 )
 
+set(requires "doom")
+
+if(CONFIG_EMUL_PLATFORM_DOOM)
+  list(APPEND requires "doom")
+ENDIF()
 
 idf_component_register(
     SRCS "main.cpp"
@@ -29,4 +34,6 @@ idf_component_register(
     INCLUDE_DIRS "common/hw/include"
     INCLUDE_DIRS "hw"
     INCLUDE_DIRS "lib" 
+
+    REQUIRES "${requires}"
     )

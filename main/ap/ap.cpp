@@ -9,9 +9,12 @@
 
 
 #include "ap.h"
+#include "doom.h"
 
 
 static void cliThread(void *args);
+static void emulInit(void);
+static void emulThread(void *args);
 
 static void updateSdCard(void);
 static void updateFatfs(void);
@@ -35,6 +38,8 @@ void apInit(void)
   }  
 
   delay(500);
+
+  emulInit();
 }
 
 void apMain(void)
@@ -183,5 +188,54 @@ void cliThread(void *args)
   {
     cliMain();
     delay(2);
+  }
+}
+
+void emulInit(void)
+{
+  if (xTaskCreate(emulThread, "emulThread", 8*1024, NULL, 5, NULL) != pdPASS)
+  {
+    logPrintf("[NG] emulThreadThread()\n");   
+  }
+
+  #if defined(CONFIG_EMUL_PLATFORM_DOOM) || defined(CONFIG_EMUL_PLATFORM_GNUBOY)      
+  while(1)
+  {
+    delay(100);
+  }
+  #endif
+}
+
+
+#ifdef CONFIG_EMUL_PLATFORM_DOOM  
+LVGL_IMG_DEF(doom_logo);
+#endif
+
+void emulThread(void *args)
+{
+  while(1)
+  {
+    if (fatfsIsMounted() == true)
+    {
+      break;
+    }
+    delay(10);
+  }
+
+  #ifdef CONFIG_EMUL_PLATFORM_DOOM  
+  lcdClear(black);
+  image_t logo;
+  
+  logo = lcdCreateImage(&doom_logo, 0, 0, 0, 0);
+  lcdDrawImage(&logo, 0, 0);
+  lcdPrintfResize(8, 200, white, 32, "LOADING...");
+  lcdUpdateDraw();
+
+  D_DoomMain();
+  #endif
+
+  while(1)
+  {
+    delay(100);
   }
 }
