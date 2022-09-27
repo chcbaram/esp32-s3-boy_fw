@@ -512,7 +512,7 @@ void I_GetEvent(void)
     }
 #endif
 
-  if (buttonGetPressedEvent(_BTN_HOME) == true)
+  if (buttonGetPressedEvent(_BTN_X) == true) // @baram
   {
     fullscreen ^= 1;
     lcdClearBuffer(black);

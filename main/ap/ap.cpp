@@ -10,6 +10,8 @@
 
 #include "ap.h"
 #include "doom.h"
+#include "gnuboy.h"
+
 
 
 static void cliThread(void *args);
@@ -213,6 +215,7 @@ LVGL_IMG_DEF(doom_logo);
 
 void emulThread(void *args)
 {
+  logPrintf("emulThread..\n");
   while(1)
   {
     if (fatfsIsMounted() == true)
@@ -221,6 +224,7 @@ void emulThread(void *args)
     }
     delay(10);
   }
+  logPrintf("emulThread Start\n");
 
   #ifdef CONFIG_EMUL_PLATFORM_DOOM  
   lcdClear(black);
@@ -232,6 +236,11 @@ void emulThread(void *args)
   lcdUpdateDraw();
 
   D_DoomMain();
+  #endif
+
+  #ifdef CONFIG_EMUL_PLATFORM_GNUBOY
+  lcdClear(black);
+  gnuboyMain();
   #endif
 
   while(1)

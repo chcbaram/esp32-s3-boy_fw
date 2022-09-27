@@ -18,7 +18,9 @@
     "adc.h": "c",
     "hw_def.h": "c",
     "typeinfo": "c",
-    "hw.h": "c"
+    "hw.h": "c",
+    "defs.h": "c",
+    "mem.h": "c"
   },
   
   "command-runner.terminal.name": "zsh",

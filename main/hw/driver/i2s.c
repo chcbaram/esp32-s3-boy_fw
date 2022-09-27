@@ -166,9 +166,13 @@ void i2sSetSampleRate(uint32_t sample_rate)
 {
   esp_err_t err;
 
+  i2s_channel_disable(i2s_chan);
+
   i2s_std_cfg.clk_cfg.sample_rate_hz = sample_rate;
-  err = i2s_channel_init_std_mode(i2s_chan, &i2s_std_cfg);
-  logPrintf("[%s] i2s_channel_init_std_mode()\n", err == ESP_OK ? "OK":"NG");
+  err = i2s_channel_reconfig_std_clock(i2s_chan, &i2s_std_cfg.clk_cfg);
+  logPrintf("[%s] i2s_channel_reconfig_std_clock()\n", err == ESP_OK ? "OK":"NG");
+
+   i2s_channel_enable(i2s_chan);
 }
 
 // https://m.blog.naver.com/PostView.nhn?blogId=hojoon108&logNo=80145019745&proxyReferer=https:%2F%2Fwww.google.com%2F

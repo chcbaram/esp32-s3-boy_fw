@@ -183,6 +183,7 @@ void lcdSetFont(LcdFont font);
 LcdFont lcdGetFont(void);
 void lcdPrintfResize(int x, int y, uint16_t color,  float ratio_h, const char *fmt, ...);
 void lcdSetResizeMode(LcdResizeMode mode);
+uint32_t lcdGetStrWidth(const char *fmt, ...);
 
 #ifdef HW_LCD_LVGL
 image_t lcdCreateImage(lvgl_img_t *p_lvgl_img, int16_t x, int16_t y, int16_t w, int16_t h);

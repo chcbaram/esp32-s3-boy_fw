@@ -14,11 +14,8 @@ file(GLOB_RECURSE SRC_FILES_RECURSE
   common/*.c 
 )
 
-set(requires "doom")
+set(requires "doom" "gnuboy")
 
-if(CONFIG_EMUL_PLATFORM_DOOM)
-  list(APPEND requires "doom")
-ENDIF()
 
 idf_component_register(
     SRCS "main.cpp"
