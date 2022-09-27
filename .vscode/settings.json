@@ -1,7 +1,26 @@
 {
   "files.associations": {
     "uart.h": "c",
-    "usb_serial_jtag.h": "c"
+    "usb_serial_jtag.h": "c",
+    "led.h": "c",
+    "*.tcc": "c",
+    "ratio": "c",
+    "system_error": "c",
+    "array": "c",
+    "functional": "c",
+    "regex": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "utility": "c",
+    "st7789.h": "c",
+    "esp_flash.h": "c",
+    "cache_hal.h": "c",
+    "adc.h": "c",
+    "hw_def.h": "c",
+    "typeinfo": "c",
+    "hw.h": "c",
+    "defs.h": "c",
+    "mem.h": "c"
   },
   
   "command-runner.terminal.name": "zsh",
@@ -11,7 +30,8 @@
       "get_idf": "get_idf",
       "build": "idf.py build",
       "flash_usb": "idf.py flash -p /dev/cu.usbmodem124201",
-      "flash_uart": "idf.py flash -p /dev/cu.usbserial-12420"
+      "flash_uart": "idf.py flash -p /dev/cu.usbserial-12420",
+      "build_flash": "idf.py build && idf.py flash -p /dev/cu.usbmodem124201",
   }
   
 }

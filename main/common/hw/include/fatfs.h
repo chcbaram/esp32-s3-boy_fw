@@ -1,7 +1,7 @@
 /*
  * fatfs.h
  *
- *  Created on: 2020. 12. 25.
+ *  Created on: 2022. 9. 17.
  *      Author: baram
  */
 
@@ -19,7 +19,10 @@ extern "C" {
 
 
 bool fatfsInit(void);
-
+bool fatfsIsInit(void);
+bool fatfsIsMounted(void);
+bool fatfsLock(void);
+bool fatfsUnLock(void);
 
 #endif
 

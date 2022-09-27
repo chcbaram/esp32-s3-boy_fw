@@ -46,7 +46,7 @@ static bool is_open = false;
 static uint8_t  log_ch = LOG_CH;
 static uint32_t log_baud = 57600;
 
-static __attribute__((section(".non_cache"))) char print_buf[256];
+static char print_buf[256];
 
 #ifdef _USE_HW_RTOS
 static SemaphoreHandle_t mutex_lock;

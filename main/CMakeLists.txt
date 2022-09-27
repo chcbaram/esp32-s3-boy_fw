@@ -4,6 +4,8 @@ file(GLOB SRC_FILES
   bsp/*.c
   hw/*.c
   hw/driver/*.c
+  hw/driver/lcd/*.c
+  hw/driver/hangul/*.c
 )
 
 file(GLOB_RECURSE SRC_FILES_RECURSE
@@ -11,6 +13,8 @@ file(GLOB_RECURSE SRC_FILES_RECURSE
   ap/*.cpp
   common/*.c 
 )
+
+set(requires "doom" "gnuboy")
 
 
 idf_component_register(
@@ -26,4 +30,7 @@ idf_component_register(
     INCLUDE_DIRS "common/core"
     INCLUDE_DIRS "common/hw/include"
     INCLUDE_DIRS "hw"
+    INCLUDE_DIRS "lib" 
+
+    REQUIRES "${requires}"
     )

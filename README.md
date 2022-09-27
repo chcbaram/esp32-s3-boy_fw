@@ -1,5 +1,9 @@
 # esp32-s3-boy_fw
 
+## windows powershell
+```
+powershell -noexit -executionpolicy bypass -File  C:\Espressif\frameworks\esp-idf-master\export.ps1
+```
 
 ## set-target
 ```

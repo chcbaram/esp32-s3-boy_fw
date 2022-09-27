@@ -16,7 +16,6 @@
 
 void bspInit(void)
 {
-
 }
 
 uint32_t bspGetCpuFreqMhz(void)

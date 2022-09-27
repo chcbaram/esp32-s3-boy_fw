@@ -27,6 +27,11 @@ extern "C" {
 #include "esp_timer.h"
 #include "esp_psram.h"
 #include "esp_flash.h"
+#include "hal/cache_hal.h"
+
+#include "esp_vfs.h"
+#include "esp_vfs_fat.h"
+#include "nvs_flash.h"
 
 #if 0
 #define _USE_LOG_PRINT    1
