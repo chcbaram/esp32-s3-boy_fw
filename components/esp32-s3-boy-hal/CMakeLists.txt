@@ -1,5 +1,3 @@
-
-
 file(GLOB SRC_FILES 
   bsp/*.c
   hw/*.c
@@ -9,22 +7,26 @@ file(GLOB SRC_FILES
 )
 
 file(GLOB_RECURSE SRC_FILES_RECURSE
-  ap/*.c
-  ap/*.cpp
   common/*.c 
 )
 
-set(requires "doom" "gnuboy")
+
+set(requires 
+  "spi_flash" 
+  "esp_timer"
+  "esp_psram"
+  "vfs"
+  "fatfs"
+  "nvs_flash"
+  "esp_adc"
+  )
 
 
-idf_component_register(
-    SRCS "main.cpp"
-    
+idf_component_register(    
     SRCS ${SRC_FILES}
     SRCS ${SRC_FILES_RECURSE}
     
     INCLUDE_DIRS ""
-    INCLUDE_DIRS "ap"
     INCLUDE_DIRS "bsp"
     INCLUDE_DIRS "common"
     INCLUDE_DIRS "common/core"
@@ -34,3 +36,7 @@ idf_component_register(
 
     REQUIRES "${requires}"
     )
+
+
+  
+

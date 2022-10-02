@@ -7,4 +7,4 @@
 # please read the SDK documents if you need to do this.
 #
 
-COMPONENT_ADD_INCLUDEDIRS := . src src/port
+COMPONENT_ADD_INCLUDEDIRS := . bsp common common/core common/hw/include hw lib

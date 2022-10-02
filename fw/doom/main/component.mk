@@ -8,5 +8,5 @@
 #
 
 
-COMPONENT_ADD_INCLUDEDIRS := . hw common
+COMPONENT_ADD_INCLUDEDIRS := . 
 

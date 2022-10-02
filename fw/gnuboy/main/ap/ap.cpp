@@ -9,9 +9,10 @@
 
 
 #include "ap.h"
-#include "doom.h"
-#include "gnuboy.h"
 
+
+
+extern "C" void gnuboyMain(void);
 
 
 static void cliThread(void *args);
@@ -199,19 +200,14 @@ void emulInit(void)
   {
     logPrintf("[NG] emulThreadThread()\n");   
   }
-
-  #if defined(CONFIG_EMUL_PLATFORM_DOOM) || defined(CONFIG_EMUL_PLATFORM_GNUBOY)      
+    
   while(1)
   {
     delay(100);
   }
-  #endif
 }
 
 
-#ifdef CONFIG_EMUL_PLATFORM_DOOM  
-LVGL_IMG_DEF(doom_logo);
-#endif
 
 void emulThread(void *args)
 {
@@ -226,22 +222,8 @@ void emulThread(void *args)
   }
   logPrintf("emulThread Start\n");
 
-  #ifdef CONFIG_EMUL_PLATFORM_DOOM  
-  lcdClear(black);
-  image_t logo;
-  
-  logo = lcdCreateImage(&doom_logo, 0, 0, 0, 0);
-  lcdDrawImage(&logo, 0, 0);
-  lcdPrintfResize(8, 200, white, 32, "LOADING...");
-  lcdUpdateDraw();
-
-  D_DoomMain();
-  #endif
-
-  #ifdef CONFIG_EMUL_PLATFORM_GNUBOY
   lcdClear(black);
   gnuboyMain();
-  #endif
 
   while(1)
   {

@@ -12,11 +12,11 @@
 #include "hw/include/audio.h"
 
 
-#include "defs.h"
-#include "pcm.h"
-#include "rc.h"
-#include "fb.h"
-#include "loader.h"
+#include "../defs.h"
+#include "../pcm.h"
+#include "../rc.h"
+#include "../fb.h"
+#include "../loader.h"
 
 
 extern uint32_t micros(void);
