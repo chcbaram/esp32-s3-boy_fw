@@ -9,6 +9,7 @@
 
 
 #include "ap.h"
+#include "esp_partition.h"
 
 
 
@@ -20,6 +21,7 @@ static void updateLcd(void);
 static void updateBat(void);
 static void updateButton(void);
 static void updateAudio(void);
+static void updatePartition(void);
 
 
 static audio_t audio;
@@ -65,6 +67,7 @@ void apMain(void)
       updateBat();
       updateButton();
       updateAudio();
+      updatePartition();
 
       lcdRequestDraw();
     }
@@ -176,6 +179,23 @@ void updateAudio(void)
   {
     buzzerBeep(100);
   }
+}
+
+void updatePartition(void)
+{
+  esp_partition_iterator_t it;
+  uint32_t index = 0;
+
+  it = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, NULL);
+
+  lcdPrintf(0,16*10, white, "PAT: ");
+
+  for (; it != NULL; it = esp_partition_next(it)) 
+  {
+    const esp_partition_t *part = esp_partition_get(it);
+    lcdPrintf(40,16*10+16*index, white, "%-9s 0x%06X %dKB", part->label, part->address, part->size/1024);
+    index++;
+  }  
 }
 
 void cliThread(void *args)
