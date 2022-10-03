@@ -32,6 +32,8 @@ extern "C" {
 #include "esp_vfs.h"
 #include "esp_vfs_fat.h"
 #include "nvs_flash.h"
+#include "esp_partition.h"
+#include "esp_ota_ops.h"
 
 #if 0
 #define _USE_LOG_PRINT    1

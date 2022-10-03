@@ -51,6 +51,20 @@ bool hwInit(void)
   sdInit();
   fatfsInit();
 
+
+  esp_partition_iterator_t it;
+
+  it = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, "launcher");
+  if (it != NULL)
+  {
+    const esp_partition_t *part = esp_partition_get(it);
+
+    if (part != esp_ota_get_running_partition())
+    {
+      esp_ota_set_boot_partition(part);
+    }
+  }
+
   return true;
 }
 

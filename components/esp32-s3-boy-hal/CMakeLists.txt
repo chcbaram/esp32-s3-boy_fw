@@ -19,6 +19,7 @@ set(requires
   "fatfs"
   "nvs_flash"
   "esp_adc"
+  "app_update"
   )
 
 

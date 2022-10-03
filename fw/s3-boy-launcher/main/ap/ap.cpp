@@ -9,7 +9,7 @@
 
 
 #include "ap.h"
-#include "esp_partition.h"
+
 
 
 
@@ -174,17 +174,15 @@ void updateAudio(void)
     else
       audioPlayFile(&audio, "/sdcard/test.wav", false);
   }
-
-  if (buttonGetPressedEvent(_BTN_A) == true)
-  {
-    buzzerBeep(100);
-  }
 }
 
 void updatePartition(void)
 {
   esp_partition_iterator_t it;
   uint32_t index = 0;
+  static uint32_t cur_index = 0;
+  bool draw_cursor = false;
+  const esp_partition_t *cur_part = NULL;
 
   it = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, NULL);
 
@@ -193,9 +191,49 @@ void updatePartition(void)
   for (; it != NULL; it = esp_partition_next(it)) 
   {
     const esp_partition_t *part = esp_partition_get(it);
-    lcdPrintf(40,16*10+16*index, white, "%-9s 0x%06X %dKB", part->label, part->address, part->size/1024);
-    index++;
+
+    draw_cursor = false;
+    if (index > 0 && (index-1) == cur_index)
+    {
+      draw_cursor = true;
+      cur_part = part;
+    }
+
+    if (draw_cursor == true)
+    {
+      lcdDrawFillRect(40, 16*10+16*index, LCD_WIDTH-40, 16, yellow);
+      lcdPrintf(40,16*10+16*index, black, "%-9s 0x%06X %dKB", part->label, part->address, part->size/1024);
+    }
+    else
+    {
+      lcdPrintf(40,16*10+16*index, white, "%-9s 0x%06X %dKB", part->label, part->address, part->size/1024);
+    }
+    index++;         
   }  
+
+  if (buttonGetPressedEvent(_BTN_UP))
+  {
+    if (cur_index == 0)
+      cur_index = index - 2;
+    else
+      cur_index--;
+  }
+  if (buttonGetPressedEvent(_BTN_DOWN))
+  {
+    cur_index++;
+    if (cur_index >= (index-1)) 
+      cur_index = 0;
+  }
+
+  if (buttonGetPressedEvent(_BTN_A) == true && cur_part != NULL)
+  {
+    lcdClear(black);
+
+    buzzerBeep(100);
+    delay(500);
+    esp_ota_set_boot_partition(cur_part);
+    esp_restart();
+  } 
 }
 
 void cliThread(void *args)
