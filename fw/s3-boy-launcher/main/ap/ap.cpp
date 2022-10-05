@@ -22,9 +22,13 @@ static void updateBat(void);
 static void updateButton(void);
 static void updateAudio(void);
 static void updatePartition(void);
+static void cliLauncher(cli_args_t *args);
 
 
 static audio_t audio;
+static bool is_enable = true;
+static bool is_req_enable = false;
+static bool is_req_value = false; 
 
 
 
@@ -40,6 +44,8 @@ void apInit(void)
   delay(500);
 
   otaInit();
+
+  cliAdd("launcher", cliLauncher);
 }
 
 void apMain(void)
@@ -58,8 +64,13 @@ void apMain(void)
       ledToggle(_DEF_LED1);
     }
 
+    if (is_req_enable == true)
+    {
+      is_enable = is_req_value;
+      is_req_enable = false;
+    }
 
-    if (lcdDrawAvailable() == true)
+    if (is_enable == true && lcdDrawAvailable() == true)
     {
       lcdClearBuffer(black);
 
@@ -254,5 +265,42 @@ void cliThread(void *args)
 }
 
 
+void cliLauncher(cli_args_t *args)
+{
+  bool ret = false;
+
+
+  if (args->argc == 1 && args->isStr(0, "enable"))
+  {
+    is_req_value = true;
+    is_req_enable = true;
+
+    while(is_req_enable == true)
+    {
+      delay(1);
+    }
+    cliPrintf("[OK] Launcher Enable\n");
+    ret = true;
+  }
+
+  if (args->argc == 1 && args->isStr(0, "disable"))
+  {
+    is_req_value = false;
+    is_req_enable = true;
+
+    while(is_req_enable == true)
+    {
+      delay(1);
+    }
+    cliPrintf("[OK] Launcher Disable\n");
+    ret = true;
+  }
+
+  if (ret == false)
+  {
+    cliPrintf("launcher enable\n");
+    cliPrintf("launcher disable\n");
+  }
+}
 
 

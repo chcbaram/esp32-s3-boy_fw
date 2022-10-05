@@ -567,6 +567,21 @@ bool cliParseArgs(cli_t *p_cli)
   return ret;
 }
 
+bool cliRunStr(const char *fmt, ...)
+{
+  bool ret;
+  va_list arg;
+  va_start (arg, fmt);  
+  cli_t *p_cli = &cli_node;
+
+  vsnprintf((char *)p_cli->line.buf, CLI_LINE_BUF_MAX, fmt, arg);
+  va_end (arg);
+  
+  ret = cliRunCmd(p_cli);
+  
+  return ret;
+}
+
 void cliPrintf(const char *fmt, ...)
 {
   va_list arg;

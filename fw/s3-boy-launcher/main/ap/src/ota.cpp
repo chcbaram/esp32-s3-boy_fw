@@ -48,6 +48,10 @@ void cliOta(cli_args_t *args)
   {
     esp_app_desc_t app_desc;
 
+
+    cliRunStr("launcher disable\n");
+    cliPrintf("\n");
+
     cliPrintf("ota part cnt : %d\n", ota_part_count);
 
     cliPrintf("Num |Part   |Project         |Address    |Size |\n");
@@ -62,6 +66,7 @@ void cliOta(cli_args_t *args)
       cliPrintf(" %d   %-7s %-16s 0x%06X %7dKB\n", i, ota_part_tbl[i]->label, app_desc.project_name, ota_part_tbl[i]->address, ota_part_tbl[i]->size/1024);
     }
 
+    cliRunStr("launcher enable\n");
     ret = true;
   }
 
