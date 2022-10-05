@@ -9,7 +9,7 @@
 #define MAIN_AP_AP_H_
 
 
-#include "hw.h"
+#include "ap_def.h"
 
 
 void apInit(void);

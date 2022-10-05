@@ -9,7 +9,7 @@
 
 
 #include "ap.h"
-
+#include "src/ota.h"
 
 
 
@@ -38,6 +38,8 @@ void apInit(void)
   }  
 
   delay(500);
+
+  otaInit();
 }
 
 void apMain(void)
@@ -183,6 +185,7 @@ void updatePartition(void)
   static uint32_t cur_index = 0;
   bool draw_cursor = false;
   const esp_partition_t *cur_part = NULL;
+  esp_app_desc_t app_desc;
 
   it = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, NULL);
 
@@ -191,6 +194,11 @@ void updatePartition(void)
   for (; it != NULL; it = esp_partition_next(it)) 
   {
     const esp_partition_t *part = esp_partition_get(it);
+
+    if (esp_ota_get_partition_description(part, &app_desc) != ESP_OK)
+    {
+      strcpy(app_desc.project_name, "empty");
+    }
 
     draw_cursor = false;
     if (index > 0 && (index-1) == cur_index)
@@ -202,11 +210,11 @@ void updatePartition(void)
     if (draw_cursor == true)
     {
       lcdDrawFillRect(40, 16*10+16*index, LCD_WIDTH-40, 16, yellow);
-      lcdPrintf(40,16*10+16*index, black, "%-9s 0x%06X %dKB", part->label, part->address, part->size/1024);
+      lcdPrintf(40,16*10+16*index, black, "%-16s 0x%06X", app_desc.project_name, part->address);
     }
     else
     {
-      lcdPrintf(40,16*10+16*index, white, "%-9s 0x%06X %dKB", part->label, part->address, part->size/1024);
+      lcdPrintf(40,16*10+16*index, white, "%-16s 0x%06X", part->label, part->address);
     }
     index++;         
   }  
