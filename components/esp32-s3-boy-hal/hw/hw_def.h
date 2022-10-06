@@ -42,7 +42,7 @@
 #define _USE_HW_BATTERY
 #define _USE_HW_I2S
 #define _USE_HW_BUZZER
-
+#define _USE_HW_YMODEM
 
 
 #define _USE_HW_LED

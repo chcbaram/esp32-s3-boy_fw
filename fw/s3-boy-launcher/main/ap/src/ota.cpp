@@ -70,9 +70,112 @@ void cliOta(cli_args_t *args)
     ret = true;
   }
 
+  if (args->argc == 2 && args->isStr(0, "ymodem"))
+  {
+    uint8_t ota_index;
+    bool is_done = false;
+    bool is_started = false;
+    ymodem_t ymodem;
+    
+    ota_index = args->getData(1);
+    cliRunStr("launcher disable\n");
+
+
+    ymodemOpen(&ymodem, cliGetPort());
+
+
+    buttonClear();
+    while(buttonGetPressedEvent(_BTN_HOME) == false)
+    {
+      if (lcdDrawAvailable())
+      {
+        lcdClearBuffer(black);
+
+        lcdPrintfRect(0, 0, LCD_WIDTH, 32, white, 32, LCD_ALIGN_H_CENTER|LCD_ALIGN_V_CENTER, 
+          "YMODEM");
+
+        if (is_started == true)
+        {
+          lcdPrintf(0, 16*3, white, "START..\n");
+          lcdPrintf(0, 16*4, white, "File : %s\n", ymodem.file_name);
+          lcdPrintf(0, 16*5, white, "Size : %dKB\n", ymodem.file_length/1024);
+
+          int percent;
+          percent = ymodem.file_received*100 / ymodem.file_length;
+
+          lcdPrintf(0, 16*7, white, "%d%%", percent);
+          lcdDrawRect(0, 16*8, LCD_WIDTH, 32, white);
+          lcdDrawFillRect(0, 16*8, LCD_WIDTH * percent / 100, 32, green);     
+
+          if (is_done == true)
+          {
+            lcdPrintf(0, 16*10, white, "DONE - OK");
+
+            switch(ymodem.type)
+            {
+              case YMODEM_TYPE_END:
+                lcdPrintf(0, 16*10, white, "DONE - OK");
+                break;
+
+              case YMODEM_TYPE_CANCEL:
+                lcdPrintf(0, 16*10, white, "DONE - CANCEL");
+                break;
+
+              case YMODEM_TYPE_ERROR:
+                lcdPrintf(0, 16*10, white, "DONE - ERROR");
+                break;
+
+              default:
+                break;
+            }
+          }     
+        }
+        else
+        {
+          lcdPrintf(0, 16*3, white, "WAIT...\n");
+        }
+
+
+        lcdRequestDraw();    
+      }
+
+      if (ymodemReceive(&ymodem) == true)
+      {
+        switch(ymodem.type)
+        {
+          case YMODEM_TYPE_START:
+            is_started = true;
+            is_done = false;
+            break;
+
+          case YMODEM_TYPE_DATA:
+            break;
+
+          case YMODEM_TYPE_END:
+            is_done = true;
+            break;
+
+          case YMODEM_TYPE_CANCEL:
+            is_done = true;
+            break;
+
+          case YMODEM_TYPE_ERROR:
+            is_done = true;
+            break;
+        }
+        ymodemAck(&ymodem);
+      }
+
+      delay(1);    
+    }
+
+
+    cliRunStr("launcher enable\n");
+  }
 
   if (ret == false)
   {
     cliPrintf("ota info\n");
+    cliPrintf("ota ymodem 0~%d[slot]\n", ota_part_count - 1);
   }
 }

@@ -35,6 +35,7 @@ static bool is_req_value = false;
 void apInit(void)
 {
   cliOpen(_DEF_UART1, 115200);
+  uartOpen(_DEF_UART2, 115200);
 
   if (xTaskCreate(cliThread, "cliThread", _HW_DEF_RTOS_THREAD_MEM_CLI, NULL, _HW_DEF_RTOS_THREAD_PRI_CLI, NULL) != pdPASS)
   {
@@ -68,6 +69,7 @@ void apMain(void)
     {
       is_enable = is_req_value;
       is_req_enable = false;
+      buttonClear();
     }
 
     if (is_enable == true && lcdDrawAvailable() == true)

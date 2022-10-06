@@ -1083,6 +1083,144 @@ void lcdPrintfResize(int x, int y, uint16_t color,  float ratio_h, const char *f
   }
 }
 
+void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio_h, uint16_t align, const char *fmt, ...)
+{
+  va_list arg;
+  va_start (arg, fmt);
+  int32_t len;
+  char print_buffer[256];
+  int Size_Char;
+  int i;
+  int x_Pre = x;
+  int y_Pre = y;
+  han_font_t FontBuf;
+  uint8_t font_width;
+  resize_image_t r_src, r_dst;
+  uint16_t pixel;
+  int16_t x_pos;
+  int16_t y_pos;
+  float ratio;
+  uint32_t str_width;
+
+  r_src.x = 0;
+  r_src.y = 0;
+  r_src.w = 0;
+  r_src.h = 16;
+  r_src.stride = 16;
+  r_src.p_data = font_src_buffer;
+
+
+
+  len = vsnprintf(print_buffer, 255, fmt, arg);
+  va_end (arg);
+
+  if (ratio_h > LCD_FONT_RESIZE_WIDTH)
+  {
+    ratio_h = LCD_FONT_RESIZE_WIDTH;
+  }
+  ratio = ratio_h / 16;
+
+  str_width = lcdGetStrWidth(print_buffer) * ratio;
+
+  x = 0;
+  y = 0;
+  for( i=0; i<len; i+=Size_Char )
+  {
+    hanFontLoad( &print_buffer[i], &FontBuf );
+
+
+    disHanFontBuffer(x, y, &FontBuf, 0xFF);
+
+    x_pos = x_Pre + x * ratio;
+    y_pos = y_Pre + y * ratio;
+
+    Size_Char = FontBuf.Size_Char;
+    if (Size_Char >= 2)
+    {
+      font_width = 16;
+      x += 2*8;
+    }
+    else
+    {
+      font_width = 8;
+      x += 1*8;
+    }
+
+    r_src.w = font_width;
+
+    if ((x_pos + font_width*ratio) >= HW_LCD_WIDTH)
+    {
+      x  = x_Pre;
+      y += 16;
+
+      x_pos = x_Pre + x * ratio;
+      y_pos = y_Pre + y * ratio;
+    }
+
+    r_dst.x = 0;
+    r_dst.y = 0;
+    r_dst.w = r_src.w * ratio;
+    r_dst.h = r_src.h * ratio;
+    r_dst.stride = LCD_FONT_RESIZE_WIDTH;
+    r_dst.p_data = font_dst_buffer;
+
+    if (r_dst.w == 0) r_dst.w = 1;
+    if (r_dst.h == 0) r_dst.h = 1;
+
+    if (lcd_resize_mode == LCD_RESIZE_BILINEAR)
+    {
+      resizeImageFastGray(&r_src, &r_dst);
+    }
+    else
+    {
+      resizeImageNearest(&r_src, &r_dst);
+    }
+
+    int x_o = 0;
+    int y_o = 0;
+
+
+    if (w > str_width)
+    {
+      if (align & LCD_ALIGN_H_CENTER)
+      {
+        x_o += (w-str_width)/2;
+      }
+      if (align & LCD_ALIGN_H_RIGHT)
+      {
+        x_o += (w-str_width);
+      }
+    }
+    if (h > r_dst.h)
+    {
+      if (align & LCD_ALIGN_V_CENTER)
+      {
+        y_o += (h-r_dst.h)/2 + 0;
+      }
+      if (align & LCD_ALIGN_V_BOTTOM)
+      {
+        y_o += (h-r_dst.h);
+      }
+    }
+
+
+    for (int i_y=0; i_y<r_dst.h; i_y++)
+    {
+      for (int i_x=0; i_x<r_dst.w; i_x++)
+      {
+        pixel = font_dst_buffer[(i_y+r_dst.y)*LCD_FONT_RESIZE_WIDTH + i_x];
+        if (pixel > 0)
+        {
+          lcdDrawPixelMix(x_o+x_pos+i_x, y_o+y_pos+i_y, color, pixel);
+        }
+      }
+    }
+
+
+    if( FontBuf.Code_Type == PHAN_END_CODE ) break;
+  }
+}
+
 void lcdSetResizeMode(LcdResizeMode mode)
 {
   lcd_resize_mode = mode;

@@ -165,7 +165,7 @@ bool cliOpenLog(uint8_t ch, uint32_t baud)
   return ret;
 }
 
-uint8_t cliGetChannel(void)
+uint8_t cliGetPort(void)
 {
   return cli_node.ch;
 }

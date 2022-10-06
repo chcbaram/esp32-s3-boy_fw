@@ -33,6 +33,7 @@ extern "C" {
 #include "i2s.h"
 #include "audio.h"
 #include "buzzer.h"
+#include "ymodem.h"
 
 
 bool hwInit(void);

@@ -50,6 +50,7 @@ bool hwInit(void)
   lcdInit();
   sdInit();
   fatfsInit();
+  ymodemInit();
 
 
   esp_partition_iterator_t it;

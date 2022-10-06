@@ -20,8 +20,8 @@ bool cdcInit(void)
 
   qbufferCreate(&rx_q, rx_buf, 512);
 
-  usb_serial_jtag_config.tx_buffer_size = 128;
-  usb_serial_jtag_config.rx_buffer_size = 128;
+  usb_serial_jtag_config.tx_buffer_size = 1024;
+  usb_serial_jtag_config.rx_buffer_size = 1024;
 
   esp_ret = usb_serial_jtag_driver_install(&usb_serial_jtag_config);
   if (esp_ret == ESP_OK)
