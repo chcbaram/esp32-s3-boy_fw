@@ -167,9 +167,9 @@ bool ymodemReceiveData(ymodem_t *p_modem)
 
   if (ymodemReceivePacket(&p_modem->rx_packet, p_modem->rx_data) == true)
   {
-    //uartPrintf(_DEF_UART2, "RxPacket 0x%X %d\n", p_modem->rx_packet.stx, p_modem->state);
-    //uartPrintf(_DEF_UART2, "     seq[0] 0x%X\n", p_modem->rx_packet.seq[0]);
-    //uartPrintf(_DEF_UART2, "     seq[1] 0x%X\n", p_modem->rx_packet.seq[1]);
+    uartPrintf(_DEF_UART2, "RxPacket 0x%X %d\n", p_modem->rx_packet.stx, p_modem->state);
+    uartPrintf(_DEF_UART2, "     seq[0] 0x%X\n", p_modem->rx_packet.seq[0]);
+    uartPrintf(_DEF_UART2, "     seq[1] 0x%X\n", p_modem->rx_packet.seq[1]);
 
     if (p_modem->state != YMODEM_STATE_WAIT_HEAD)
     {
@@ -221,10 +221,11 @@ bool ymodemReceiveData(ymodem_t *p_modem)
           p_modem->file_buf_length = buf_length;
           p_modem->file_received += buf_length;
 
-          ymodemPutch(p_modem, YMODEM_ACK);
-
+          //ymodemPutch(p_modem, YMODEM_ACK);
+          p_modem->ack_mode = YMODEM_RESP_ACK;
           p_modem->state = YMODEM_STATE_WAIT_DATA;
           p_modem->type = YMODEM_TYPE_DATA;
+          ret = true;
         }
         break;
 
@@ -255,9 +256,18 @@ bool ymodemReceiveData(ymodem_t *p_modem)
       case YMODEM_STATE_WAIT_LAST:
         //ymodemPutch(p_modem, YMODEM_ACK);
         //ymodemPutch(p_modem, YMODEM_C);
+
         p_modem->ack_mode = YMODEM_RESP_ACK_C;
-        p_modem->state = YMODEM_STATE_WAIT_HEAD;
-        p_modem->type = YMODEM_TYPE_END;
+
+        if (p_modem->rx_packet.stx == YMODEM_EOT)
+        {
+          p_modem->state = YMODEM_STATE_WAIT_END;
+        }
+        else
+        {
+          p_modem->state = YMODEM_STATE_WAIT_HEAD;
+          p_modem->type = YMODEM_TYPE_END;
+        }
         ret = true;
         break;
 
@@ -480,6 +490,8 @@ void cliYmodem(cli_args_t *args)
             keep_loop = false;
             break;
         }
+
+        ymodemAck(&ymodem);
       }
     }
     ret = true;
