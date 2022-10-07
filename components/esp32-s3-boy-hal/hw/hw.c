@@ -30,6 +30,8 @@ bool hwInit(void)
   cdcInit();
   uartInit();
   uartOpen(_DEF_UART1, 115200);
+  uartOpen(_DEF_UART2, 115200);
+
   logOpen(_DEF_UART1, 115200);
 
   bootMsg();

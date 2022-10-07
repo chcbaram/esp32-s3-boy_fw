@@ -75,8 +75,12 @@ void cliOta(cli_args_t *args)
     uint8_t ota_index;
     bool is_done = false;
     bool is_started = false;
+    bool is_error = false;
+    esp_err_t esp_ret;
     ymodem_t ymodem;
+    esp_ota_handle_t handle = 0;
     
+
     ota_index = args->getData(1);
     cliRunStr("launcher disable\n");
 
@@ -109,8 +113,6 @@ void cliOta(cli_args_t *args)
 
           if (is_done == true)
           {
-            lcdPrintf(0, 16*10, white, "DONE - OK");
-
             switch(ymodem.type)
             {
               case YMODEM_TYPE_END:
@@ -132,7 +134,14 @@ void cliOta(cli_args_t *args)
         }
         else
         {
-          lcdPrintf(0, 16*3, white, "WAIT...\n");
+          if (is_error == false)
+          {
+            lcdPrintf(0, 16*3, white, "WAIT...\n");
+          }
+          else
+          {
+            lcdPrintf(0, 16*3, white, "ERROR...\n");
+          }
         }
 
 
@@ -146,13 +155,26 @@ void cliOta(cli_args_t *args)
           case YMODEM_TYPE_START:
             is_started = true;
             is_done = false;
+            is_error = false;
+
+            esp_ret = esp_ota_begin(ota_part_tbl[ota_index], ymodem.file_length, &handle);
+            if (esp_ret != ESP_OK)
+            {
+              is_error = true;
+            }
             break;
 
           case YMODEM_TYPE_DATA:
+            esp_ret = esp_ota_write_with_offset(handle, ymodem.file_buf, ymodem.file_buf_length, ymodem.file_addr);
+            if (esp_ret != ESP_OK)
+            {
+              is_error = true;
+            }
             break;
 
           case YMODEM_TYPE_END:
             is_done = true;
+            esp_ota_end(handle);          
             break;
 
           case YMODEM_TYPE_CANCEL:

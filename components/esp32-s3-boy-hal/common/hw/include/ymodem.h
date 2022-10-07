@@ -39,6 +39,7 @@ typedef struct
 
   uint8_t   stx;
   uint8_t   seq[2];
+  uint8_t   seq_pre[2];
   uint8_t   *data;
   uint16_t  length;
   uint16_t  crc;

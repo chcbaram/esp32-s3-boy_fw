@@ -113,27 +113,36 @@ bool ymodemGetFileInfo(ymodem_t *p_modem)
   for (int i=0; i<128; i++)
   {
     p_modem->file_name[i] = p_modem->rx_packet.data[i];
+
     if (p_modem->file_name[i] == 0x00)
     {
       size_i = i + 1;
-      valid = true;
+
+      if (i > 0)
+      {
+        valid = true;
+      }
       break;
     }
   }
 
+
   if (valid == true)
   {
+    valid = false;
     for (int i=size_i; i<128; i++)
     {
       if (p_modem->rx_packet.data[i] == 0x20)
       {
         p_modem->rx_packet.data[i] = 0x00;
+        valid = true;
         break;
       }
     }
-
     p_modem->file_length = (uint32_t)strtoul((const char * )&p_modem->rx_packet.data[size_i], (char **)NULL, (int) 0);
   }
+
+  ret = valid;
 
   return ret;
 }
@@ -167,9 +176,9 @@ bool ymodemReceiveData(ymodem_t *p_modem)
 
   if (ymodemReceivePacket(&p_modem->rx_packet, p_modem->rx_data) == true)
   {
-    uartPrintf(_DEF_UART2, "RxPacket 0x%X %d\n", p_modem->rx_packet.stx, p_modem->state);
-    uartPrintf(_DEF_UART2, "     seq[0] 0x%X\n", p_modem->rx_packet.seq[0]);
-    uartPrintf(_DEF_UART2, "     seq[1] 0x%X\n", p_modem->rx_packet.seq[1]);
+    //uartPrintf(_DEF_UART2, "RxPacket 0x%X %d\n", p_modem->rx_packet.stx, p_modem->state);
+    //uartPrintf(_DEF_UART2, "     seq[0] 0x%X\n", p_modem->rx_packet.seq[0]);
+    //uartPrintf(_DEF_UART2, "     seq[1] 0x%X\n", p_modem->rx_packet.seq[1]);
 
     if (p_modem->state != YMODEM_STATE_WAIT_HEAD)
     {
@@ -190,15 +199,20 @@ bool ymodemReceiveData(ymodem_t *p_modem)
         else if (p_modem->rx_packet.seq[0] == 0x00)
         {
           p_modem->file_addr = 0;
-          ymodemGetFileInfo(p_modem);
+          if (ymodemGetFileInfo(p_modem) == true)
+          {
+            //ymodemPutch(p_modem, YMODEM_ACK);
+            //ymodemPutch(p_modem, YMODEM_C);
+            p_modem->ack_mode = YMODEM_RESP_ACK_C;
 
-          //ymodemPutch(p_modem, YMODEM_ACK);
-          //ymodemPutch(p_modem, YMODEM_C);
-          p_modem->ack_mode = YMODEM_RESP_ACK_C;
-
-          p_modem->state = YMODEM_STATE_WAIT_FIRST;
-          p_modem->type = YMODEM_TYPE_START;
-          ret = true;
+            p_modem->state = YMODEM_STATE_WAIT_FIRST;
+            p_modem->type = YMODEM_TYPE_START;
+            ret = true;
+          }
+          else
+          {
+            ymodemPutch(p_modem, YMODEM_ACK);
+          }
         }
         break;
 
@@ -237,19 +251,26 @@ bool ymodemReceiveData(ymodem_t *p_modem)
         }
         else
         {
-          buf_length = (p_modem->file_length - p_modem->file_addr);
-          if (buf_length > p_modem->rx_packet.length)
+          if (p_modem->rx_packet.seq[0] != p_modem->rx_packet.seq_pre[0])
           {
-            buf_length = p_modem->rx_packet.length;
-          }
-          p_modem->file_buf_length = buf_length;
-          p_modem->file_addr += buf_length;
-          p_modem->file_received += buf_length;
+            buf_length = (p_modem->file_length - p_modem->file_addr);
+            if (buf_length > p_modem->rx_packet.length)
+            {
+              buf_length = p_modem->rx_packet.length;
+            }
+            p_modem->file_buf_length = buf_length;
+            p_modem->file_addr += buf_length;
+            p_modem->file_received += buf_length;
 
-          //ymodemPutch(p_modem, YMODEM_ACK);
-          p_modem->ack_mode = YMODEM_RESP_ACK;
-          p_modem->type = YMODEM_TYPE_DATA;
-          ret = true;
+            //ymodemPutch(p_modem, YMODEM_ACK);
+            p_modem->ack_mode = YMODEM_RESP_ACK;
+            p_modem->type = YMODEM_TYPE_DATA;
+            ret = true;
+          }
+          else
+          {
+            ymodemPutch(p_modem, YMODEM_ACK);
+          }
         }
         break;
 
@@ -356,11 +377,13 @@ bool ymodemReceivePacket(ymodem_packet_t *p_packet, uint8_t data_in)
       break;
 
     case YMODEM_PACKET_WAIT_SEQ1:
+      p_packet->seq_pre[0] = p_packet->seq[0];
       p_packet->seq[0] = data_in;
       p_packet->state = YMODEM_PACKET_WAIT_SEQ2;
       break;
 
     case YMODEM_PACKET_WAIT_SEQ2:
+      p_packet->seq_pre[1] = p_packet->seq[1];
       p_packet->seq[1] = data_in;
       if (p_packet->seq[0] == (uint8_t)(~data_in))
       {

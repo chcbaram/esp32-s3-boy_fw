@@ -7,7 +7,6 @@
 
 
 #include "uart.h"
-#include "qbuffer.h"
 #include "cdc.h"
 #include "driver/uart.h"
 
@@ -29,8 +28,6 @@ typedef struct
   uart_config_t config;
   QueueHandle_t queue;
 
-  qbuffer_t     qbuffer;
-  uint8_t       rx_buf[UART_RX_Q_BUF_LEN];
   uint8_t       wr_buf[UART_RX_Q_BUF_LEN];
 } uart_tbl_t;
 
@@ -72,7 +69,6 @@ bool uartOpen(uint8_t ch, uint32_t baud)
       uart_tbl[ch].config.source_clk = UART_SCLK_APB;
 
 
-      qbufferCreate(&uart_tbl[ch].qbuffer, &uart_tbl[ch].rx_buf[0], UART_RX_Q_BUF_LEN);
       uart_driver_install(UART_NUM_0, UART_RX_Q_BUF_LEN*2, UART_RX_Q_BUF_LEN*2, 0, NULL, 0);
       uart_param_config(UART_NUM_0, &uart_tbl[ch].config);
 
@@ -117,16 +113,7 @@ uint32_t uartAvailable(uint8_t ch)
   {
     case _DEF_UART1:
       uart_get_buffered_data_len(uart_tbl[ch].port, &len);
-      if (len > (UART_RX_Q_BUF_LEN - 1))
-      {
-        len = UART_RX_Q_BUF_LEN - 1;
-      }
-      if (len > 0)
-      {
-        uart_read_bytes(uart_tbl[ch].port, uart_tbl[ch].wr_buf, len, 10);
-        qbufferWrite(&uart_tbl[ch].qbuffer, uart_tbl[ch].wr_buf, len);
-      }
-      ret = qbufferAvailable(&uart_tbl[ch].qbuffer);
+      ret = len;
       break;
 
     case _DEF_UART2:
@@ -161,7 +148,7 @@ uint8_t uartRead(uint8_t ch)
   switch(ch)
   {
     case _DEF_UART1:
-      qbufferRead(&uart_tbl[ch].qbuffer, &ret, 1);
+      uart_read_bytes(uart_tbl[ch].port, &ret, 1, 10);
       break;
 
     case _DEF_UART2:
