@@ -1,0 +1,3 @@
+{
+  "cmake.sourceDirectory": "${workspaceFolder}/esp32-s3-boy-hal"
+}

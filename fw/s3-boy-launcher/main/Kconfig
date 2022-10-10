@@ -1,0 +1,24 @@
+menu "EMULATOR"
+
+    choice EMUL_PLATFORM
+        bool "Emulator"
+        help
+            Select the Emulator.
+
+        config EMUL_PLATFORM_DOOM
+            bool "DOOM"
+            help
+                DOOM Emulator.
+
+        config EMUL_PLATFORM_GNUBOY
+            bool "GNUBOY"
+            help
+                GNUBOY Emultor.
+
+        config EMUL_PLATFORM_NONE
+            bool "NONE"
+            help
+                Emultor Not Use.                
+
+    endchoice
+endmenu

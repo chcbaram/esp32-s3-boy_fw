@@ -1,0 +1,16 @@
+{
+  "files.associations": {
+  },
+  
+  "command-runner.terminal.name": "zsh",
+  "command-runner.terminal.autoClear": true,
+  "command-runner.terminal.autoFocus": true,
+  "command-runner.commands": {
+      "get_idf": "get_idf",
+      "build": "idf.py build",
+      "flash_usb": "idf.py flash -p /dev/cu.usbmodem124201",
+      "flash_uart": "idf.py flash -p /dev/cu.usbserial-12420",
+      "build_flash": "idf.py build && idf.py flash -p /dev/cu.usbmodem124201",
+  }
+  
+}
