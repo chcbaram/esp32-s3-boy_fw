@@ -810,8 +810,14 @@ uint32_t lcdGetStrWidth(const char *fmt, ...)
 
     Size_Char = FontBuf.Size_Char;
 
-    str_len += (Size_Char * 8);
-
+    if (Size_Char >= 2)
+    {
+      str_len += (2 * 8);
+    }
+    else
+    {
+      str_len += (1 * 8);
+    }
     if( FontBuf.Code_Type == PHAN_END_CODE ) break;
   }
 
@@ -1083,7 +1089,7 @@ void lcdPrintfResize(int x, int y, uint16_t color,  float ratio_h, const char *f
   }
 }
 
-void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio_h, uint16_t align, const char *fmt, ...)
+void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio, uint16_t align, const char *fmt, ...)
 {
   va_list arg;
   va_start (arg, fmt);
@@ -1099,7 +1105,6 @@ void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio_h, ui
   uint16_t pixel;
   int16_t x_pos;
   int16_t y_pos;
-  float ratio;
   uint32_t str_width;
 
   r_src.x = 0;
@@ -1113,14 +1118,9 @@ void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio_h, ui
 
   len = vsnprintf(print_buffer, 255, fmt, arg);
   va_end (arg);
+  
 
-  if (ratio_h > LCD_FONT_RESIZE_WIDTH)
-  {
-    ratio_h = LCD_FONT_RESIZE_WIDTH;
-  }
-  ratio = ratio_h / 16;
-
-  str_width = lcdGetStrWidth(print_buffer) * ratio;
+  str_width = lcdGetStrWidth(fmt) * ratio;
 
   x = 0;
   y = 0;
@@ -1129,7 +1129,7 @@ void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio_h, ui
     hanFontLoad( &print_buffer[i], &FontBuf );
 
 
-    disHanFontBuffer(x, y, &FontBuf, 0xFF);
+    disHanFontBuffer(0, 0, &FontBuf, 0xFF);
 
     x_pos = x_Pre + x * ratio;
     y_pos = y_Pre + y * ratio;

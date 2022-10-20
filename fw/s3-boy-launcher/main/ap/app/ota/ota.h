@@ -7,5 +7,6 @@
 
 void otaInit(void);
 bool otaIsBusy(void);
+bool otaRunByName(const char *p_name);
 
 #endif
