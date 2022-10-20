@@ -39,6 +39,30 @@ bool otaIsBusy(void)
   return is_busy;
 }
 
+bool otaRunByName(const char *p_name)
+{
+  bool ret = false;
+
+  esp_app_desc_t app_desc;
+
+  
+  for (int i=0; i<ota_part_count; i++)
+  {
+    if (esp_ota_get_partition_description(ota_part_tbl[i], &app_desc) != ESP_OK)
+    {
+      app_desc.project_name[0] = 0;
+    }      
+    if (strcmp(app_desc.project_name, p_name) == 0)
+    {
+      lcdClear(black);
+      esp_ota_set_boot_partition(ota_part_tbl[i]);
+      esp_restart();
+    }
+  }
+
+  return ret;
+}
+
 void cliOta(cli_args_t *args)
 {
   bool ret = false;

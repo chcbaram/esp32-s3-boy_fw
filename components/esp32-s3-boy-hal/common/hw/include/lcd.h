@@ -182,7 +182,7 @@ void lcdPrintf(int x, int y, uint16_t color,  const char *fmt, ...);
 void lcdSetFont(LcdFont font);
 LcdFont lcdGetFont(void);
 void lcdPrintfResize(int x, int y, uint16_t color,  float ratio_h, const char *fmt, ...);
-void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio_h, uint16_t align, const char *fmt, ...);
+void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio, uint16_t align, const char *fmt, ...);
 void lcdSetResizeMode(LcdResizeMode mode);
 uint32_t lcdGetStrWidth(const char *fmt, ...);
 
