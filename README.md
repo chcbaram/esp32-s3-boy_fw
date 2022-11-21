@@ -20,3 +20,8 @@ idf.py build
 ```
 idf.py -p com1 flash
 ```
+
+## fw bin blash
+```
+esptool.py -p com1 write_flash  0x490000 ./build/s3-boy-fmsx.bin
+```
