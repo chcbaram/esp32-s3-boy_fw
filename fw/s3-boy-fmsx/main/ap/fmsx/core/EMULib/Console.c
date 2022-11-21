@@ -962,7 +962,7 @@ const char *CONFile(pixel FGColor,pixel BGColor,const char *Ext)
   BufSize = 0;
 
   chdir(dir_roms);
-  
+
   do
   {
 #ifdef ANDROID
@@ -1025,7 +1025,7 @@ const char *CONFile(pixel FGColor,pixel BGColor,const char *Ext)
     /* Scan files */
     for(rewinddir(D);(DP=readdir(D));)
       //if(!stat(DP->d_name,&ST)&&!S_ISDIR(ST.st_mode))
-      if (DP->d_type != DT_DIR)
+      if (DP->d_type != DT_DIR && DP->d_name[0] != '.')
       {
         I=strlen(DP->d_name)+1;
         printf("file : %s\n", DP->d_name);

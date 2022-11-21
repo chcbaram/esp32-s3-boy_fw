@@ -22,7 +22,7 @@ static void cliThread(void *args);
 
 void apInit(void)
 {
-  cliOpen(_DEF_UART1, 115200);
+  cliOpen(_DEF_UART2, 115200);
 
 
   if (xTaskCreate(cliThread, "cliThread", _HW_DEF_RTOS_THREAD_MEM_CLI, NULL, _HW_DEF_RTOS_THREAD_PRI_CLI, NULL) != pdPASS)
