@@ -9,21 +9,21 @@
 
 
 #include "ap.h"
-#include "launcher/launcher.h"
-#include "app/ota/ota.h"
 
 
+
+extern "C" void fmsxMain(void);
 
 
 static void cliThread(void *args);
-
+static void emulInit(void);
+static void emulThread(void *args);
 
 
 
 void apInit(void)
 {
   cliOpen(_DEF_UART2, 115200);
-
 
   if (xTaskCreate(cliThread, "cliThread", _HW_DEF_RTOS_THREAD_MEM_CLI, NULL, _HW_DEF_RTOS_THREAD_PRI_CLI, NULL) != pdPASS)
   {
@@ -32,15 +32,12 @@ void apInit(void)
 
   delay(500);
 
-  otaInit();
+  emulInit();
 }
 
 void apMain(void)
 {
   uint32_t pre_time;
-
-
-  launcher::main();
 
 
   pre_time = millis();
@@ -64,6 +61,39 @@ void cliThread(void *args)
   }
 }
 
+void emulInit(void)
+{
+  if (xTaskCreate(emulThread, "emulThread", 8*1024, NULL, 5, NULL) != pdPASS)
+  {
+    logPrintf("[NG] emulThreadThread()\n");   
+  }
+    
+  while(1)
+  {
+    delay(100);
+  }
+}
 
 
 
+void emulThread(void *args)
+{
+  logPrintf("emulThread..\n");
+  while(1)
+  {
+    if (fatfsIsMounted() == true)
+    {
+      break;
+    }
+    delay(10);
+  }
+  logPrintf("emulThread Start\n");
+
+  lcdClear(black);
+  fmsxMain();
+
+  while(1)
+  {
+    delay(100);
+  }
+}

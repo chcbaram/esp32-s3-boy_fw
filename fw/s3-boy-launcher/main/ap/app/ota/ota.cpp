@@ -73,7 +73,7 @@ void cliOta(cli_args_t *args)
     esp_app_desc_t app_desc;
 
 
-    cliRunStr("launcher disable\n");
+    cliRunStr("hw_info disable\n");
     cliPrintf("\n");
 
     cliPrintf("ota part cnt : %d\n", ota_part_count);
@@ -90,7 +90,7 @@ void cliOta(cli_args_t *args)
       cliPrintf(" %d   %-7s %-16s 0x%06X %7dKB\n", i, ota_part_tbl[i]->label, app_desc.project_name, ota_part_tbl[i]->address, ota_part_tbl[i]->size/1024);
     }
 
-    cliRunStr("launcher enable\n");
+    cliRunStr("hw_info enable\n");
     ret = true;
   }
 
@@ -106,7 +106,7 @@ void cliOta(cli_args_t *args)
     
 
     ota_index = args->getData(1);
-    cliRunStr("launcher disable\n");
+    cliRunStr("hw_info disable\n");
 
 
     ymodemOpen(&ymodem, cliGetPort());
@@ -216,7 +216,7 @@ void cliOta(cli_args_t *args)
     }
 
 
-    cliRunStr("launcher enable\n");
+    cliRunStr("hw_info enable\n");
   }
 
   if (ret == false)

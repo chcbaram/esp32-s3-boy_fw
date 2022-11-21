@@ -1,0 +1,12 @@
+{
+  "files.associations": {
+    "sound.h": "c",
+    "emulib.h": "c",
+    "msx.h": "c",
+    "z80.h": "c",
+    "console.h": "c",
+    "unistd.h": "c",
+    "string.h": "c",
+    "libboy.h": "c"
+  }
+}

@@ -48,6 +48,7 @@ typedef struct menu_list_
 
 static void runGameGnuboy(void);
 static void runGameDoom(void);
+static void runGameMsx(void);
 
 const menu_node_t main_node[] =
     {
@@ -61,6 +62,7 @@ const menu_node_t emul_node[] =
     {
         {"GNUBOY", runGameGnuboy, NULL},
         {"DOOM",   runGameDoom, NULL},
+        {"MSX",    runGameMsx, NULL},
     };
 
 
@@ -427,6 +429,14 @@ void runGameGnuboy(void)
 void runGameDoom(void)
 {
   if (otaRunByName("s3-boy-doom") == false)
+  {
+    drawMsgBox("게임 없음", red, 500);
+  }
+}
+
+void runGameMsx(void)
+{
+  if (otaRunByName("s3-boy-fmsx") == false)
   {
     drawMsgBox("게임 없음", red, 500);
   }
