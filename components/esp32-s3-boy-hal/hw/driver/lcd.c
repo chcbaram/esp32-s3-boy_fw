@@ -118,10 +118,6 @@ bool lcdInit(void)
   backlight_value = 100;
 
 
-  lcdLoadCfg();
-  lcdSetBackLight(backlight_value);
-
-
   is_init = st7789Init();
   st7789InitDriver(&lcd);
 
@@ -136,6 +132,9 @@ bool lcdInit(void)
     logPrintf("[NG] st7789Init()\n");
 
   p_draw_frame_buf = frame_buffer[frame_index];
+
+  lcdLoadCfg();
+  lcdSetBackLight(backlight_value);
 
   #if HW_LCD_LOGO > 0
   lcdLogoOn();
