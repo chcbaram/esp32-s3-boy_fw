@@ -49,8 +49,8 @@ bool gpioInit(void)
 
   for (int i=0; i<GPIO_MAX_CH; i++)
   {
+    gpioPinWrite(i, gpio_tbl[i].init_value);    
     gpioPinMode(i, gpio_tbl[i].mode);
-    gpioPinWrite(i, gpio_tbl[i].init_value);
   }
 
 #ifdef _USE_HW_CLI
@@ -70,7 +70,7 @@ bool gpioPinMode(uint8_t ch, uint8_t mode)
     return false;
   }
 
-  gpio_reset_pin(gpio_tbl[ch].pin);
+  // gpio_reset_pin(gpio_tbl[ch].pin);
   
   switch(mode)
   {
