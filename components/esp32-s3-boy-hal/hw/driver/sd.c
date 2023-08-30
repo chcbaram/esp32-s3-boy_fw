@@ -23,6 +23,7 @@ static void sdThread(void *args);
 
 
 static bool is_init = false;
+static bool is_init_slot = false;
 
 static SemaphoreHandle_t mutex_lock;
 static sdmmc_card_t card;
@@ -52,11 +53,16 @@ bool sdInit(void)
   logPrintf("[%s] sdmmc_host_init()\n", err == ESP_OK ? "OK":"NG");
   if (err != ESP_OK) return false;
 
-  err = sdmmc_host_init_slot(host.slot, &slot_config);
-  logPrintf("[%s] sdmmc_host_init_slot()\n", err == ESP_OK ? "OK":"NG");
-  if (err != ESP_OK) return false;
-
   logPrintf("[%s] sdIsDetected()\n", sdIsDetected()== true ? "OK":"NG");
+  if (sdIsDetected()== true)
+  {
+    err = sdmmc_host_init_slot(host.slot, &slot_config);
+    logPrintf("[%s] sdmmc_host_init_slot()\n", err == ESP_OK ? "OK":"NG");
+    if (err == ESP_OK)
+    {
+      is_init_slot = true;
+    }
+  }
 
   if (xTaskCreate(sdThread, "sdThread", _HW_DEF_RTOS_THREAD_MEM_SD, NULL, _HW_DEF_RTOS_THREAD_PRI_SD, NULL) != pdPASS)
   {
@@ -206,6 +212,21 @@ bool sdReInit(void)
   bool ret = false;
   esp_err_t err;
 
+
+  if (is_init_slot == false)
+  {
+    err = sdmmc_host_init_slot(host.slot, &slot_config);
+    logPrintf("[%s] sdmmc_host_init_slot()\n", err == ESP_OK ? "OK":"NG");
+    if (err == ESP_OK)
+    {
+      is_init_slot = true;
+    }
+    else
+    {
+      is_init = false;
+      return false;
+    }
+  }
 
   err = sdmmc_card_init(&host, &card);
   logPrintf("[%s] sdmmc_card_init()\n", err == ESP_OK ? "OK":"NG");

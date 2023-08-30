@@ -28,8 +28,8 @@ static const gpio_tbl_t gpio_tbl[GPIO_MAX_CH] =
       {GPIO_NUM_15, _DEF_OUTPUT, _DEF_HIGH}, // 0. LCD CS      
       {GPIO_NUM_16, _DEF_OUTPUT, _DEF_LOW }, // 1. LCD DC
       {GPIO_NUM_4 , _DEF_OUTPUT, _DEF_LOW }, // 2. LCD BLK      
-      {GPIO_NUM_5 , _DEF_OUTPUT, _DEF_HIGH}, // 3. LCD RST
-      {GPIO_NUM_38, _DEF_OUTPUT, _DEF_HIGH }, // 4. SPK MUTE
+      {GPIO_NUM_5 , _DEF_OUTPUT, _DEF_LOW }, // 3. LCD RST
+      {GPIO_NUM_38, _DEF_OUTPUT, _DEF_HIGH}, // 4. SPK MUTE
       {GPIO_NUM_17, _DEF_INPUT , _DEF_HIGH}, // 5. SDCARD CD
     };
 
@@ -49,8 +49,8 @@ bool gpioInit(void)
 
   for (int i=0; i<GPIO_MAX_CH; i++)
   {
+    gpioPinWrite(i, gpio_tbl[i].init_value);    
     gpioPinMode(i, gpio_tbl[i].mode);
-    gpioPinWrite(i, gpio_tbl[i].init_value);
   }
 
 #ifdef _USE_HW_CLI
@@ -70,7 +70,7 @@ bool gpioPinMode(uint8_t ch, uint8_t mode)
     return false;
   }
 
-  gpio_reset_pin(gpio_tbl[ch].pin);
+  // gpio_reset_pin(gpio_tbl[ch].pin);
   
   switch(mode)
   {

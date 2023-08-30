@@ -57,12 +57,6 @@ bool pwmInit(void)
     .hpoint         = 0
   };
 
-  for (int i=0; i<PWM_MAX_CH; i++)
-  {
-    pwm_tbl[i].duty = 0;
-    pwm_tbl[i].max_value = 255;
-  }
-
   pwm_tbl[0].channel = LEDC_CHANNEL_0;
     
   if (ledc_timer_config(&ledc_timer) != ESP_OK)
@@ -72,6 +66,14 @@ bool pwmInit(void)
   if (ledc_channel_config(&ledc_channel) != ESP_OK)
   {
     logPrintf("[NG] ledc_channel_config()\n");
+  }
+
+  for (int i=0; i<PWM_MAX_CH; i++)
+  {
+    pwm_tbl[i].duty = 0;
+    pwm_tbl[i].max_value = 255;
+
+    pwmWrite(i, 0);
   }
 
   is_init = ret;

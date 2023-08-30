@@ -118,10 +118,6 @@ bool lcdInit(void)
   backlight_value = 100;
 
 
-  lcdLoadCfg();
-  lcdSetBackLight(backlight_value);
-
-
   is_init = st7789Init();
   st7789InitDriver(&lcd);
 
@@ -136,6 +132,9 @@ bool lcdInit(void)
     logPrintf("[NG] st7789Init()\n");
 
   p_draw_frame_buf = frame_buffer[frame_index];
+
+  lcdLoadCfg();
+  lcdSetBackLight(backlight_value);
 
   #if HW_LCD_LOGO > 0
   lcdLogoOn();
@@ -786,6 +785,34 @@ void lcdPrintf(int x, int y, uint16_t color,  const char *fmt, ...)
   }
 }
 
+uint32_t lcdGetStrWidthBuf(char *print_buffer, int32_t len)
+{
+  int Size_Char;
+  int i;
+  han_font_t FontBuf;
+  uint32_t str_len;
+
+  str_len = 0;
+
+  for( i=0; i<len; i+=Size_Char )
+  {
+    hanFontLoad( &print_buffer[i], &FontBuf );
+
+    Size_Char = FontBuf.Size_Char;
+
+    if (Size_Char >= 2)
+    {
+      str_len += (2 * 8);
+    }
+    else
+    {
+      str_len += (1 * 8);
+    }
+    if( FontBuf.Code_Type == PHAN_END_CODE ) break;
+  }
+
+  return str_len;
+}
 
 uint32_t lcdGetStrWidth(const char *fmt, ...)
 {
@@ -1120,7 +1147,8 @@ void lcdPrintfRect(int x, int y, int w, int h, uint16_t color, float ratio, uint
   va_end (arg);
   
 
-  str_width = lcdGetStrWidth(fmt) * ratio;
+  str_width = lcdGetStrWidthBuf(print_buffer, len) * ratio;
+
 
   x = 0;
   y = 0;

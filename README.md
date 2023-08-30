@@ -21,7 +21,14 @@ idf.py build
 idf.py -p com1 flash
 ```
 
+
+## fw bin blash
+```
+esptool.py -p com1 write_flash  0x490000 ./build/s3-boy-fmsx.bin
+```
+
 ## debug
 ```
  ~/.espressif/tools/openocd-esp32/v0.11.0-esp32-20220706/openocd-esp32/bin/openocd -f board/esp32s3-builtin.cfg
 ```
+
